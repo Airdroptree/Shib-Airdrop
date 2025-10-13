@@ -10,7 +10,7 @@ app.use(express.json());
 // Environment Variables
 const MONGODB_URI = process.env.MONGODB_URI;
 const ADMIN_KEY = process.env.ADMIN_KEY || 'admin123';
-const PORT = process.env.PORT || 3000;;
+const PORT = process.env.PORT || 8080;
 
 // MongoDB Connection
 const connectDB = async () => {
@@ -226,13 +226,12 @@ const startServer = async () => {
         app.listen(PORT, '0.0.0.0', () => {
             console.log(`🚀 Backend server running on port ${PORT}`);
             console.log(`📊 Environment: ${process.env.NODE_ENV || 'development'}`);
-            console.log(`🌐 API available at: http://localhost:${PORT}`);
+            console.log(`🌐 API available at: ${process.env.RAILWAY_STATIC_URL || `http://localhost:${PORT}`}`);
         });
     } catch (error) {
         console.error('❌ Failed to start server:', error);
         process.exit(1);
     }
 };
-
 
 startServer();
