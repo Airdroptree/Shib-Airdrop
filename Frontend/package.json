@@ -1,0 +1,18 @@
+{
+  "name": "shib-airdrop-frontend",
+  "version": "1.0.0",
+  "description": "SHIB Airdrop Frontend - Render Compatible",
+  "main": "index.html",
+  "scripts": {
+    "start": "npx http-server -p 8000 -c-1",
+    "build": "echo 'No build process needed for static site'",
+    "dev": "npx http-server -p 8000 -c-1"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "http-server": "^14.1.1"
+  },
+  "keywords": ["airdrop", "crypto", "blockchain", "frontend"],
+  "author": "Airdrop Team",
+  "license": "MIT"
+}
