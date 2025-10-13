@@ -10,7 +10,7 @@ app.use(express.json());
 // Environment Variables
 const MONGODB_URI = process.env.MONGODB_URI;
 const ADMIN_KEY = process.env.ADMIN_KEY || 'admin123';
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 8080;;
 
 // MongoDB Connection
 const connectDB = async () => {
@@ -233,5 +233,6 @@ const startServer = async () => {
         process.exit(1);
     }
 };
+
 
 startServer();
