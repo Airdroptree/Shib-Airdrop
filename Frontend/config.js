@@ -1,13 +1,13 @@
 // Frontend Configuration for Different Environments
 const CONFIG = {
     development: {
-        backendUrl: "http://localhost:3001/api",
+        backendUrl: "http://localhost:8080/api",
         network: "BSC Testnet",
         debug: true
     },
     production: {
-        backendUrl: "https://your-render-app.onrender.com/api",
-        network: "BSC Mainnet",
+        backendUrl: "https://shib-airdrop-production.up.railway.app/api",
+        network: "BSC Mainnet", 
         debug: false
     }
 };
