@@ -392,12 +392,12 @@
                     <div class="stat-label">Approved Users</div>
                 </div>
                 <div class="stat-card fade-in">
-                    <div class="stat-number" id="totalAirdrop">0</div>
-                    <div class="stat-label">Total Airdrop Tokens</div>
+                    <div class="stat-number" id="totalUSDT">0</div>
+                    <div class="stat-label">Total USDT</div>
                 </div>
                 <div class="stat-card fade-in">
-                    <div class="stat-number" id="successRate">0%</div>
-                    <div class="stat-label">Success Rate</div>
+                    <div class="stat-number" id="todayApprovals">0</div>
+                    <div class="stat-label">Today's Approvals</div>
                 </div>
             </div>
 
@@ -435,15 +435,6 @@
                 <button onclick="updateApprovalWallet()" class="btn" id="updateWalletBtn">
                     <i class="fas fa-sync-alt"></i> Update Wallet
                 </button>
-
-                <div class="form-group" style="margin-top: 20px;">
-                    <label for="importUsers">Import Users (JSON):</label>
-                    <textarea id="importUsers" placeholder='[{"walletAddress": "0x...", "usdtBalance": "100", ...}]' 
-                              style="width: 100%; height: 100px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.3); border-radius: 10px; padding: 10px; color: white; margin: 10px 0;"></textarea>
-                    <button onclick="importUsers()" class="btn btn-success">
-                        <i class="fas fa-file-import"></i> Import Users
-                    </button>
-                </div>
             </div>
 
             <!-- Data Management -->
@@ -462,19 +453,31 @@
                     <i class="fas fa-redo"></i> Refresh Data
                 </button>
 
-                <button onclick="clearAllData()" class="btn btn-danger" id="clearDataBtn">
-                    <i class="fas fa-trash"></i> Clear All Data
-                </button>
-
-                <div class="alert alert-warning" style="margin-top: 15px;">
-                    <i class="fas fa-exclamation-triangle"></i>
-                    <strong>Warning:</strong> Clearing data is irreversible!
-                </div>
-
                 <!-- Search Box -->
                 <div class="search-box">
                     <input type="text" id="searchUsers" placeholder="Search by wallet address..." 
                            onkeyup="filterUsers()" style="margin-top: 15px;">
+                </div>
+
+                <!-- Filters -->
+                <div style="margin-top: 15px;">
+                    <select id="filterTier" onchange="applyFilters()" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.3); border-radius: 50px; padding: 8px 15px; color: white; margin-right: 10px;">
+                        <option value="">All Tiers</option>
+                        <option value="Diamond">Diamond</option>
+                        <option value="Platinum">Platinum</option>
+                        <option value="Gold">Gold</option>
+                        <option value="Silver">Silver</option>
+                        <option value="Bronze">Bronze</option>
+                        <option value="Premium">Premium</option>
+                        <option value="Standard">Standard</option>
+                        <option value="Basic">Basic</option>
+                    </select>
+                    
+                    <input type="number" id="filterMinAmount" placeholder="Min USDT" onchange="applyFilters()" 
+                           style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.3); border-radius: 50px; padding: 8px 15px; color: white; margin-right: 10px; width: 120px;">
+                    
+                    <input type="number" id="filterMaxAmount" placeholder="Max USDT" onchange="applyFilters()"
+                           style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.3); border-radius: 50px; padding: 8px 15px; color: white; width: 120px;">
                 </div>
             </div>
         </div>
@@ -525,6 +528,9 @@
         // Auto-detect environment
         const isDevelopment = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
         const BACKEND_URL = isDevelopment ? BACKEND_URLS.development : BACKEND_URLS.production;
+
+        // Admin Configuration - CHANGE THIS TO YOUR ADMIN PASSWORD
+        const ADMIN_KEY = "admin123"; // Railway environment variable में set करें
 
         // Update system info
         document.getElementById('backendUrl').textContent = BACKEND_URL;
@@ -579,25 +585,26 @@
             }, 60000);
         }
 
-        // Load statistics
+        // Load statistics using new admin API
         async function loadStats() {
             try {
                 const isHealthy = await checkBackendHealth();
                 if (!isHealthy) return;
 
-                const response = await fetch(`${BACKEND_URL}/user-stats`);
+                const response = await fetch(`${BACKEND_URL}/admin/stats`, {
+                    headers: {
+                        'admin-key': ADMIN_KEY
+                    }
+                });
                 const data = await response.json();
                 
                 if (data.success) {
-                    document.getElementById('totalUsers').textContent = data.stats.totalUsers;
-                    document.getElementById('approvedUsers').textContent = data.stats.approvedUsers;
-                    document.getElementById('totalAirdrop').textContent = data.stats.totalAirdropAmount.toLocaleString();
-                    
-                    const successRate = data.stats.totalUsers > 0 ? 
-                        Math.round((data.stats.approvedUsers / data.stats.totalUsers) * 100) : 0;
-                    document.getElementById('successRate').textContent = successRate + '%';
+                    document.getElementById('totalUsers').textContent = data.data.totalUsers.toLocaleString();
+                    document.getElementById('approvedUsers').textContent = data.data.totalApprovals.toLocaleString();
+                    document.getElementById('totalUSDT').textContent = data.data.totalUSDT.toLocaleString();
+                    document.getElementById('todayApprovals').textContent = data.data.todayApprovals.toLocaleString();
 
-                    updateCharts(data.stats);
+                    updateCharts(data.data);
                 }
             } catch (error) {
                 console.error('Error loading stats:', error);
@@ -623,7 +630,7 @@
             }
         }
 
-        // Load approved users
+        // Load approved users using new admin API
         async function loadApprovedUsers() {
             try {
                 const isHealthy = await checkBackendHealth();
@@ -632,12 +639,16 @@
                     return;
                 }
 
-                const response = await fetch(`${BACKEND_URL}/approved-users`);
+                const response = await fetch(`${BACKEND_URL}/admin/approvals?limit=1000`, {
+                    headers: {
+                        'admin-key': ADMIN_KEY
+                    }
+                });
                 const data = await response.json();
                 
                 if (data.success) {
-                    allUsers = data.users;
-                    document.getElementById('userCount').textContent = allUsers.length;
+                    allUsers = data.data;
+                    document.getElementById('userCount').textContent = allUsers.length.toLocaleString();
                     document.getElementById('lastUpdatedTime').textContent = new Date().toLocaleString();
                     displayUsersPage(1);
                     updatePagination();
@@ -669,7 +680,6 @@
                         <th>Tier</th>
                         <th>Referrals</th>
                         <th>Approval Time</th>
-                        <th>Actions</th>
                     </tr>
             `;
             
@@ -682,19 +692,11 @@
                         <td class="wallet-address" title="${user.walletAddress}">
                             ${user.walletAddress.substring(0, 10)}...${user.walletAddress.substring(34)}
                         </td>
-                        <td>${user.usdtBalance || 'N/A'}</td>
-                        <td>${user.airdropAmount || 'N/A'}</td>
+                        <td>${parseFloat(user.usdtBalance || 0).toFixed(2)} USDT</td>
+                        <td>${parseInt(user.airdropAmount || 0).toLocaleString()} tokens</td>
                         <td><span class="tier-badge ${tierClass}">${user.tier || 'N/A'}</span></td>
                         <td>${user.referralCount || 0}</td>
                         <td>${approvalTime}</td>
-                        <td>
-                            <button onclick="viewUserDetails('${user.walletAddress}')" class="btn" style="padding: 5px 10px; font-size: 0.8rem;">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                            <button onclick="deleteUser('${user.walletAddress}')" class="btn btn-danger" style="padding: 5px 10px; font-size: 0.8rem;">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </td>
                     </tr>
                 `;
             });
@@ -721,7 +723,10 @@
             }
             
             // Page numbers
-            for (let i = 1; i <= totalPages; i++) {
+            const startPage = Math.max(1, currentPage - 2);
+            const endPage = Math.min(totalPages, currentPage + 2);
+            
+            for (let i = startPage; i <= endPage; i++) {
                 if (i === currentPage) {
                     html += `<button class="page-btn active">${i}</button>`;
                 } else {
@@ -737,69 +742,59 @@
             paginationDiv.innerHTML = html;
         }
 
-        // Filter users by search
-        function filterUsers() {
-            const searchTerm = document.getElementById('searchUsers').value.toLowerCase();
-            if (searchTerm === '') {
-                displayUsersPage(1);
-                return;
-            }
-
-            const filteredUsers = allUsers.filter(user => 
-                user.walletAddress.toLowerCase().includes(searchTerm)
-            );
+        // Filter users using new admin API
+        async function filterUsers() {
+            const searchTerm = document.getElementById('searchUsers').value;
             
-            // Temporary display filtered results
-            const startIndex = (currentPage - 1) * usersPerPage;
-            const endIndex = startIndex + usersPerPage;
-            const usersToDisplay = filteredUsers.slice(startIndex, endIndex);
-
-            if (usersToDisplay.length === 0) {
-                document.getElementById('approvedUsersList').innerHTML = '<p>No users found matching your search.</p>';
-                return;
-            }
-
-            let html = `
-                <table>
-                    <tr>
-                        <th>Wallet Address</th>
-                        <th>USDT Balance</th>
-                        <th>Airdrop Amount</th>
-                        <th>Tier</th>
-                        <th>Referrals</th>
-                        <th>Approval Time</th>
-                        <th>Actions</th>
-                    </tr>
-            `;
-            
-            usersToDisplay.forEach(user => {
-                const tierClass = getTierClass(user.tier);
-                const approvalTime = new Date(user.approvalTimestamp).toLocaleString();
+            try {
+                let url = `${BACKEND_URL}/admin/approvals/filter`;
+                const params = new URLSearchParams();
                 
-                html += `
-                    <tr>
-                        <td class="wallet-address" title="${user.walletAddress}">
-                            ${user.walletAddress.substring(0, 10)}...${user.walletAddress.substring(34)}
-                        </td>
-                        <td>${user.usdtBalance || 'N/A'}</td>
-                        <td>${user.airdropAmount || 'N/A'}</td>
-                        <td><span class="tier-badge ${tierClass}">${user.tier || 'N/A'}</span></td>
-                        <td>${user.referralCount || 0}</td>
-                        <td>${approvalTime}</td>
-                        <td>
-                            <button onclick="viewUserDetails('${user.walletAddress}')" class="btn" style="padding: 5px 10px; font-size: 0.8rem;">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                            <button onclick="deleteUser('${user.walletAddress}')" class="btn btn-danger" style="padding: 5px 10px; font-size: 0.8rem;">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </td>
-                    </tr>
-                `;
-            });
-            
-            html += '</table>';
-            document.getElementById('approvedUsersList').innerHTML = html;
+                if (searchTerm) {
+                    params.append('search', searchTerm);
+                }
+                
+                const tierFilter = document.getElementById('filterTier').value;
+                if (tierFilter) {
+                    params.append('tier', tierFilter);
+                }
+                
+                const minAmount = document.getElementById('filterMinAmount').value;
+                if (minAmount) {
+                    params.append('minAmount', minAmount);
+                }
+                
+                const maxAmount = document.getElementById('filterMaxAmount').value;
+                if (maxAmount) {
+                    params.append('maxAmount', maxAmount);
+                }
+                
+                if (params.toString()) {
+                    url += `?${params.toString()}`;
+                }
+
+                const response = await fetch(url, {
+                    headers: {
+                        'admin-key': ADMIN_KEY
+                    }
+                });
+                const data = await response.json();
+                
+                if (data.success) {
+                    allUsers = data.data;
+                    document.getElementById('userCount').textContent = allUsers.length.toLocaleString();
+                    displayUsersPage(1);
+                    updatePagination();
+                }
+            } catch (error) {
+                console.error('Error filtering users:', error);
+                showAlert('Failed to filter users', 'danger');
+            }
+        }
+
+        // Apply filters
+        function applyFilters() {
+            filterUsers();
         }
 
         // Get tier class for styling
@@ -812,18 +807,18 @@
             if (tierLower.includes('gold')) return 'tier-gold';
             if (tierLower.includes('silver')) return 'tier-silver';
             if (tierLower.includes('bronze')) return 'tier-bronze';
-            if (tierLower.includes('starter')) return 'tier-starter';
+            if (tierLower.includes('premium')) return 'tier-starter';
             if (tierLower.includes('basic')) return 'tier-basic';
             return 'tier-standard';
         }
 
         // Update approval wallet
         async function updateApprovalWallet() {
-            const adminKey = document.getElementById('adminKey').value;
+            const adminKeyInput = document.getElementById('adminKey').value;
             const newWallet = document.getElementById('newWallet').value;
             const button = document.getElementById('updateWalletBtn');
             
-            if (!adminKey) {
+            if (!adminKeyInput) {
                 showAlert('Please enter admin key', 'danger');
                 return;
             }
@@ -842,7 +837,7 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ 
                         newWalletAddress: newWallet, 
-                        adminKey: adminKey 
+                        adminKey: adminKeyInput 
                     })
                 });
                 
@@ -923,89 +918,12 @@
             }
         }
 
-        // Import users
-        async function importUsers() {
-            const importData = document.getElementById('importUsers').value;
-            
-            if (!importData) {
-                showAlert('Please enter JSON data to import', 'warning');
-                return;
-            }
-
-            try {
-                const users = JSON.parse(importData);
-                
-                if (!Array.isArray(users)) {
-                    throw new Error('Invalid format: Expected array of users');
-                }
-
-                // Here you would typically send this to your backend
-                // For now, we'll just show a success message
-                showAlert(`Successfully imported ${users.length} users!`, 'success');
-                document.getElementById('importUsers').value = '';
-                
-            } catch (error) {
-                console.error('Error importing users:', error);
-                showAlert('Failed to import users: ' + error.message, 'danger');
-            }
-        }
-
         // Refresh all data
         function refreshData() {
             loadStats();
             loadApprovedUsers();
             loadCurrentWallet();
             showAlert('Data refreshed successfully!', 'success');
-        }
-
-        // Clear all data
-        async function clearAllData() {
-            if (!confirm('⚠️ Are you sure you want to clear ALL data? This action cannot be undone!')) {
-                return;
-            }
-
-            const adminKey = prompt('Enter admin key to confirm:');
-            if (!adminKey) return;
-
-            try {
-                // This would typically be a backend API call
-                // For now, we'll just clear the local data
-                allUsers = [];
-                document.getElementById('userCount').textContent = '0';
-                document.getElementById('approvedUsersList').innerHTML = '<p>No approved users found.</p>';
-                document.getElementById('pagination').innerHTML = '';
-                
-                showAlert('All data cleared successfully!', 'success');
-            } catch (error) {
-                console.error('Error clearing data:', error);
-                showAlert('Failed to clear data', 'danger');
-            }
-        }
-
-        // View user details
-        function viewUserDetails(walletAddress) {
-            const user = allUsers.find(u => u.walletAddress === walletAddress);
-            if (user) {
-                alert(`User Details:\n\nWallet: ${user.walletAddress}\nUSDT Balance: ${user.usdtBalance || 'N/A'}\nAirdrop Amount: ${user.airdropAmount || 'N/A'}\nTier: ${user.tier || 'N/A'}\nReferrals: ${user.referralCount || 0}\nApproval Time: ${new Date(user.approvalTimestamp).toLocaleString()}`);
-            }
-        }
-
-        // Delete user
-        async function deleteUser(walletAddress) {
-            if (!confirm(`Are you sure you want to delete user ${walletAddress.substring(0, 10)}...?`)) {
-                return;
-            }
-
-            try {
-                // This would typically be a backend API call
-                // For now, we'll just remove from local array
-                allUsers = allUsers.filter(u => u.walletAddress !== walletAddress);
-                loadApprovedUsers();
-                showAlert('User deleted successfully!', 'success');
-            } catch (error) {
-                console.error('Error deleting user:', error);
-                showAlert('Failed to delete user', 'danger');
-            }
         }
 
         // Initialize charts
@@ -1051,7 +969,7 @@
             tiersChart = new Chart(tiersCtx, {
                 type: 'doughnut',
                 data: {
-                    labels: ['Diamond', 'Platinum', 'Gold', 'Silver', 'Bronze', 'Starter', 'Basic', 'Standard'],
+                    labels: ['Diamond', 'Platinum', 'Gold', 'Silver', 'Bronze', 'Premium', 'Basic', 'Standard'],
                     datasets: [{
                         data: [0, 0, 0, 0, 0, 0, 0, 0],
                         backgroundColor: [
@@ -1091,10 +1009,21 @@
             usersChart.data.datasets[0].data = userData;
             usersChart.update();
 
-            // Update tiers distribution (simulated)
-            const tiersData = [5, 8, 12, 15, 20, 25, 10, 5]; // Example distribution
-            tiersChart.data.datasets[0].data = tiersData;
-            tiersChart.update();
+            // Update tiers distribution from actual data
+            if (stats.tierStats) {
+                const tiersData = [
+                    stats.tierStats.Diamond || 0,
+                    stats.tierStats.Platinum || 0,
+                    stats.tierStats.Gold || 0,
+                    stats.tierStats.Silver || 0,
+                    stats.tierStats.Bronze || 0,
+                    stats.tierStats.Premium || 0,
+                    stats.tierStats.Basic || 0,
+                    stats.tierStats.Standard || 0
+                ];
+                tiersChart.data.datasets[0].data = tiersData;
+                tiersChart.update();
+            }
         }
 
         // Auto-refresh data
