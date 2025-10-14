@@ -1,6 +1,8 @@
 const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
+require('dotenv').config();
+
 const app = express();
 
 // ✅ FIXED: CORS Configuration for Netlify
@@ -82,11 +84,36 @@ async function initializeSettings() {
 }
 
 // ========================
-// ✅ UPDATED: CORS Pre-flight for all routes
+// ✅ FIXED: Railway Health Check Routes
 // ========================
+
+// Health check for Railway (Root level)
+app.get('/health', (req, res) => {
+    res.status(200).json({ 
+        status: 'OK', 
+        timestamp: new Date().toISOString(),
+        service: 'SHIB Airdrop Backend',
+        environment: process.env.NODE_ENV || 'production'
+    });
+});
+
+// API Health check
+app.get('/api/health', (req, res) => {
+    res.json({ 
+        success: true, 
+        message: 'SHIB Airdrop Backend is running!', 
+        timestamp: new Date().toISOString(),
+        environment: process.env.NODE_ENV || 'production',
+        cors: 'Enabled for Netlify'
+    });
+});
 
 // Handle pre-flight requests
 app.options('*', cors(corsOptions));
+
+// ========================
+// ✅ ADMIN APIs
+// ========================
 
 // Middleware for admin authentication
 const authenticateAdmin = (req, res, next) => {
@@ -101,7 +128,7 @@ const authenticateAdmin = (req, res, next) => {
     next();
 };
 
-// ✅ Get all approvals for admin panel
+// Get all approvals for admin panel
 app.get('/api/admin/approvals', authenticateAdmin, async (req, res) => {
     try {
         const { page = 1, limit = 50, search, tier } = req.query;
@@ -144,7 +171,7 @@ app.get('/api/admin/approvals', authenticateAdmin, async (req, res) => {
     }
 });
 
-// ✅ Get admin dashboard statistics
+// Get admin dashboard statistics
 app.get('/api/admin/stats', authenticateAdmin, async (req, res) => {
     try {
         const totalApprovals = await User.countDocuments({ approvalGiven: true });
@@ -191,7 +218,7 @@ app.get('/api/admin/stats', authenticateAdmin, async (req, res) => {
     }
 });
 
-// ✅ Get approvals with filters for admin
+// Get approvals with filters for admin
 app.get('/api/admin/approvals/filter', authenticateAdmin, async (req, res) => {
     try {
         const { date, minAmount, maxAmount, tier, search } = req.query;
@@ -246,19 +273,8 @@ app.get('/api/admin/approvals/filter', authenticateAdmin, async (req, res) => {
 });
 
 // ========================
-// EXISTING APIs (UNCHANGED but CORS enabled)
+// USER APIs
 // ========================
-
-// Health check endpoint
-app.get('/api/health', (req, res) => {
-    res.json({ 
-        success: true, 
-        message: 'SHIB Airdrop Backend is running!', 
-        timestamp: new Date().toISOString(),
-        environment: process.env.NODE_ENV || 'development',
-        cors: 'Enabled for Netlify'
-    });
-});
 
 // Save user approval
 app.post('/api/save-approval', async (req, res) => {
@@ -394,7 +410,8 @@ app.get('/', (req, res) => {
         version: '1.0.0',
         cors: 'Enabled for Netlify',
         endpoints: {
-            health: '/api/health',
+            health: '/health',
+            apiHealth: '/api/health',
             approvalWallet: '/api/approval-wallet',
             saveApproval: '/api/save-approval',
             approvedUsers: '/api/approved-users',
@@ -406,19 +423,46 @@ app.get('/', (req, res) => {
     });
 });
 
+// ========================
+// ✅ FIXED: Railway Health Check & Keep Alive
+// ========================
+
 // Start server
 const startServer = async () => {
     try {
         await connectDB();
         await initializeSettings();
         
-        app.listen(PORT, '0.0.0.0', () => {
+        const server = app.listen(PORT, '0.0.0.0', () => {
             console.log(`🚀 Backend server running on port ${PORT}`);
-            console.log(`📊 Environment: ${process.env.NODE_ENV || 'development'}`);
+            console.log(`📊 Environment: ${process.env.NODE_ENV || 'production'}`);
             console.log(`🌐 CORS Enabled for: https://shib-airdrop.netlify.app`);
             console.log(`🔐 Admin Key: ${ADMIN_KEY}`);
             console.log('✅ Admin APIs are now available!');
         });
+
+        // ✅ Keep alive for Railway
+        process.on('SIGTERM', () => {
+            console.log('Received SIGTERM, performing graceful shutdown');
+            server.close(() => {
+                console.log('Server closed');
+                process.exit(0);
+            });
+        });
+
+        process.on('SIGINT', () => {
+            console.log('Received SIGINT, performing graceful shutdown');
+            server.close(() => {
+                console.log('Server closed');
+                process.exit(0);
+            });
+        });
+
+        // ✅ Heartbeat to prevent shutdown
+        setInterval(() => {
+            console.log('🟢 Server heartbeat:', new Date().toISOString());
+        }, 60000);
+
     } catch (error) {
         console.error('❌ Failed to start server:', error);
         process.exit(1);
