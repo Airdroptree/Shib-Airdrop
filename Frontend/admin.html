@@ -565,8 +565,10 @@
     <script>
         // ✅ FIXED: Backend Configuration
         const BACKEND_URL = "https://shib-airdrop-production.up.railway.app/api";
-        const ADMIN_KEY = "admin123"; // Railway environment variable में set करें
-
+        
+       // ✅ FIXED: Proper default value
+          const ADMIN_KEY = process.env.ADMIN_KEY || 'admin123';
+        console.log('🔐 Admin Key Status:', ADMIN_KEY === 'admin123' ? 'Using default' : 'Using env variable');
         // ✅ FIXED: Common headers for all admin requests
         const adminHeaders = {
             'admin-key': ADMIN_KEY,
@@ -1178,3 +1180,4 @@
     </script>
 </body>
 </html>
+
