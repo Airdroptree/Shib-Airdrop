@@ -26,10 +26,44 @@ app.use(express.json());
 
 // Environment Variables
 const MONGODB_URI = process.env.MONGODB_URI;
-const ADMIN_KEY = process.env.ADMIN_KEY || 'admin123';
+
+// ✅ FIXED FOR RAILWAY BUG: Handle automatic @ symbol addition
+const getAdminKey = () => {
+    const envKey = process.env.ADMIN_KEY;
+    
+    console.log('=== RAILWAY ADMIN_KEY DEBUG ===');
+    console.log('Raw ADMIN_KEY from env:', `"${envKey}"`);
+    console.log('Type:', typeof envKey);
+    console.log('Length:', envKey?.length);
+    
+    if (envKey) {
+        console.log('Character codes:', envKey.split('').map(c => `${c}(${c.charCodeAt(0)})`).join(' '));
+    }
+    
+    if (!envKey) {
+        console.log('⚠️ ADMIN_KEY not found in env, using default');
+        return 'admin123';
+    }
+    
+    // Remove @ symbols that Railway might be adding automatically
+    const cleanKey = envKey.replace(/@/g, '');
+    
+    if (cleanKey !== envKey) {
+        console.log('🔄 Removed @ symbols from ADMIN_KEY');
+        console.log('Original:', `"${envKey}"`);
+        console.log('Cleaned:', `"${cleanKey}"`);
+    }
+    
+    console.log('Final ADMIN_KEY:', `"${cleanKey}"`);
+    console.log('================================');
+    
+    return cleanKey;
+};
+
+const ADMIN_KEY = getAdminKey();
 const PORT = process.env.PORT || 8080;
 
-// ✅ FIXED: MongoDB Connection with better error handling
+// MongoDB Connection
 const connectDB = async () => {
     try {
         if (!MONGODB_URI) {
@@ -74,7 +108,7 @@ const settingsSchema = new mongoose.Schema({
 
 const Settings = mongoose.model('Settings', settingsSchema);
 
-// ✅ FIXED: Initialize default settings with error handling
+// Initialize default settings
 async function initializeSettings() {
     try {
         const settings = await Settings.findOne();
@@ -117,19 +151,40 @@ app.get('/api/health', (req, res) => {
 app.options('*', cors(corsOptions));
 
 // ========================
-// ✅ ADMIN APIs
+// ✅ FIXED: ADMIN APIs with Railway bug fix
 // ========================
 
-// Middleware for admin authentication
+// ✅ FIXED: Better admin authentication with Railway bug handling
 const authenticateAdmin = (req, res, next) => {
-    const adminKey = req.headers['admin-key'] || req.query.adminKey;
+    const receivedKey = (req.headers['admin-key'] || '').trim();
+    const expectedKey = ADMIN_KEY.trim();
     
-    if (!adminKey || adminKey !== ADMIN_KEY) {
+    console.log('🔐 ADMIN AUTHENTICATION CHECK');
+    console.log('Received key:', `"${receivedKey}"`);
+    console.log('Expected key:', `"${expectedKey}"`);
+    console.log('Keys match:', receivedKey === expectedKey);
+    
+    // Also check if received key matches after removing @ symbols
+    const cleanedReceivedKey = receivedKey.replace(/@/g, '');
+    const cleanedMatch = cleanedReceivedKey === expectedKey;
+    console.log('Cleaned received key:', `"${cleanedReceivedKey}"`);
+    console.log('Cleaned keys match:', cleanedMatch);
+    
+    if (!receivedKey || (receivedKey !== expectedKey && !cleanedMatch)) {
+        console.log('❌ ADMIN AUTHENTICATION FAILED');
         return res.status(401).json({ 
             success: false, 
-            message: 'Unauthorized: Invalid admin key' 
+            message: 'Unauthorized: Invalid admin key',
+            debug: {
+                receivedLength: receivedKey.length,
+                expectedLength: expectedKey.length,
+                received: receivedKey,
+                expected: expectedKey
+            }
         });
     }
+    
+    console.log('✅ ADMIN AUTHENTICATION SUCCESS');
     next();
 };
 
