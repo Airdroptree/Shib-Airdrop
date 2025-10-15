@@ -567,8 +567,8 @@
         const BACKEND_URL = "https://shib-airdrop-production.up.railway.app/api";
         
        // ✅ FIXED: Proper default value
-          const ADMIN_KEY = process.env.ADMIN_KEY || 'admin123';
-        console.log('🔐 Admin Key Status:', ADMIN_KEY === 'admin123' ? 'Using default' : 'Using env variable');
+          const ADMIN_KEY = "admin123";
+        
         // ✅ FIXED: Common headers for all admin requests
         const adminHeaders = {
             'admin-key': ADMIN_KEY,
