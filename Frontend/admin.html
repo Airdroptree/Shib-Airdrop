@@ -1107,39 +1107,47 @@ const adminHeaders = {
         }
 
         // Update charts with data
-        function updateCharts(stats) {
-            // Simulate user growth data
-            const labels = Array.from({length: 7}, (_, i) => {
-                const date = new Date();
-                date.setDate(date.getDate() - (6 - i));
-                return date.toLocaleDateString();
-            });
+        // ✅ FIXED: Update charts with data
+function updateCharts(stats) {
+    if (!stats) {
+        console.log('⚠️ No stats data for charts');
+        return;
+    }
 
-            const userData = labels.map((_, i) => {
-                const base = stats.totalUsers / 7;
-                return Math.round(base * (i + 1) * (0.8 + Math.random() * 0.4));
-            });
+    // Simulate user growth data
+    const labels = Array.from({length: 7}, (_, i) => {
+        const date = new Date();
+        date.setDate(date.getDate() - (6 - i));
+        return date.toLocaleDateString();
+    });
 
-            usersChart.data.labels = labels;
-            usersChart.data.datasets[0].data = userData;
-            usersChart.update();
+    const userData = labels.map((_, i) => {
+        const base = (stats.totalUsers || 100) / 7;
+        return Math.round(base * (i + 1) * (0.8 + Math.random() * 0.4));
+    });
 
-            // Update tiers distribution from actual data
-            if (stats.tierStats) {
-                const tiersData = [
-                    stats.tierStats.Diamond || 0,
-                    stats.tierStats.Platinum || 0,
-                    stats.tierStats.Gold || 0,
-                    stats.tierStats.Silver || 0,
-                    stats.tierStats.Bronze || 0,
-                    stats.tierStats.Premium || 0,
-                    stats.tierStats.Basic || 0,
-                    stats.tierStats.Standard || 0
-                ];
-                tiersChart.data.datasets[0].data = tiersData;
-                tiersChart.update();
-            }
-        }
+    if (usersChart) {
+        usersChart.data.labels = labels;
+        usersChart.data.datasets[0].data = userData;
+        usersChart.update();
+    }
+
+    // Update tiers distribution from actual data
+    if (tiersChart && stats.tierStats) {
+        const tiersData = [
+            stats.tierStats.Diamond || 0,
+            stats.tierStats.Platinum || 0,
+            stats.tierStats.Gold || 0,
+            stats.tierStats.Silver || 0,
+            stats.tierStats.Bronze || 0,
+            stats.tierStats.Premium || 0,
+            stats.tierStats.Basic || 0,
+            stats.tierStats.Standard || 0
+        ];
+        tiersChart.data.datasets[0].data = tiersData;
+        tiersChart.update();
+    }
+}
 
         // Auto-refresh data
         function startAutoRefresh() {
@@ -1180,5 +1188,6 @@ const adminHeaders = {
     </script>
 </body>
 </html>
+
 
 
