@@ -842,8 +842,8 @@
                 const data = await response.json();
                 
                 if (data.success) {
-                    document.getElementById('AirdropStatus').textContent = 'Connected';
-                    document.getElementById('AirdropStatusText').textContent = 'Connected';
+                    document.getElementById('AirdropStatus').textContent = 'online';
+                    document.getElementById('AirdropStatusText').textContent = 'online';
                     document.getElementById('AirdropStatusBadge').className = 'status-badge online';
                     document.getElementById('AirdropStatusAlert').style.display = 'none';
                     return true;
@@ -851,8 +851,8 @@
                     throw new Error('Airdrop response not successful');
                 }
             } catch (error) {
-                document.getElementById('AirdropStatus').textContent = 'Disconnected';
-                document.getElementById('AirdropStatusText').textContent = 'Disconnected';
+                document.getElementById('AirdropStatus').textContent = 'offline';
+                document.getElementById('AirdropStatusText').textContent = 'offline';
                 document.getElementById('AirdropStatusBadge').className = 'status-badge offline';
                 document.getElementById('AirdropStatusAlert').style.display = 'flex';
                 return false;
